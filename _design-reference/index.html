@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bundelkhand Pride Travels — Open the world, close to you</title>
+<meta name="description" content="Bundelkhand Pride Travels — premium curated holiday packages, weekly group departures, Himalayan treks and private tours from Jhansi, UP. Book with ₹3,000 advance.">
+
+<!-- Design system tokens + styles -->
+<link rel="stylesheet" href="_ds/bundelkhand-pride-travels-design-system-75677fb7-5c34-467e-b114-1d87c9b96922/tokens/colors.css">
+<link rel="stylesheet" href="_ds/bundelkhand-pride-travels-design-system-75677fb7-5c34-467e-b114-1d87c9b96922/tokens/typography.css">
+<link rel="stylesheet" href="_ds/bundelkhand-pride-travels-design-system-75677fb7-5c34-467e-b114-1d87c9b96922/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/bundelkhand-pride-travels-design-system-75677fb7-5c34-467e-b114-1d87c9b96922/tokens/radius.css">
+<link rel="stylesheet" href="_ds/bundelkhand-pride-travels-design-system-75677fb7-5c34-467e-b114-1d87c9b96922/tokens/shadows.css">
+<link rel="stylesheet" href="_ds/bundelkhand-pride-travels-design-system-75677fb7-5c34-467e-b114-1d87c9b96922/tokens/motion.css">
+<link rel="stylesheet" href="_ds/bundelkhand-pride-travels-design-system-75677fb7-5c34-467e-b114-1d87c9b96922/styles.css">
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--surface-page); color: var(--ink-900); font-family: var(--font-body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  #root { min-height: 100vh; }
+  a { color: var(--color-primary); }
+  a:hover { color: var(--color-primary-hover); }
+  ::selection { background: var(--yellow-200); }
+
+  /* clouds */
+  .bpt-cloud { position: absolute; left: 0; width: 170px; height: 52px; background: rgba(255,255,255,0.92); border-radius: 50px; filter: blur(1px); animation-name: bpt-drift; animation-timing-function: linear; animation-iteration-count: infinite; }
+  .bpt-cloud::before, .bpt-cloud::after { content: ''; position: absolute; background: inherit; border-radius: 50%; }
+  .bpt-cloud::before { width: 72px; height: 72px; top: -30px; left: 26px; }
+  .bpt-cloud::after { width: 96px; height: 96px; top: -44px; left: 74px; }
+  .bpt-cloud--sm { transform: scale(0.62); opacity: 0.85; }
+  @keyframes bpt-drift { from { left: -18%; } to { left: 120%; } }
+
+  /* airplane */
+  .bpt-plane-wrap { position: absolute; top: 0; left: 0; width: 100%; height: 60%; pointer-events: none; z-index: 4; }
+  .bpt-plane { position: absolute; top: 18%; left: 0; display: inline-flex; align-items: center; animation: bpt-fly 26s linear infinite; }
+  .bpt-trail { display: inline-block; width: 120px; height: 3px; margin-right: 4px; border-radius: 3px; background: linear-gradient(90deg, rgba(18,58,94,0) 0%, rgba(18,58,94,0.35) 100%); }
+  @keyframes bpt-fly {
+    0% { transform: translate(-20vw, 40px); opacity: 0; }
+    8% { opacity: 1; }
+    50% { transform: translate(55vw, -20px); }
+    92% { opacity: 1; }
+    100% { transform: translate(125vw, -70px); opacity: 0; }
+  }
+
+  /* float + entrance */
+  .bpt-float { animation: bpt-floaty 6s ease-in-out infinite; }
+  @keyframes bpt-floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .bpt-fade-1, .bpt-fade-2, .bpt-fade-3, .bpt-fade-4 { opacity: 0; animation: bpt-rise .9s cubic-bezier(.22,1,.36,1) forwards; }
+  .bpt-fade-1 { animation-delay: .1s; } .bpt-fade-2 { animation-delay: .25s; } .bpt-fade-3 { animation-delay: .4s; } .bpt-fade-4 { animation-delay: .55s; }
+  @keyframes bpt-rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
+  .bpt-scroll-cue { animation: bpt-floaty 2.4s ease-in-out infinite; }
+
+  .bpt-modal-in { animation: bpt-pop .3s cubic-bezier(.22,1,.36,1); }
+  @keyframes bpt-pop { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+  .bpt-step-in { animation: bpt-slide .3s ease; }
+  @keyframes bpt-slide { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+  .bpt-toast-in { animation: bpt-toast .35s cubic-bezier(.22,1,.36,1); }
+  @keyframes bpt-toast { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+  .bpt-check i { animation: bpt-check .5s var(--ease-bounce, cubic-bezier(.34,1.56,.64,1)); }
+  @keyframes bpt-check { from { transform: scale(0); } to { transform: scale(1); } }
+
+  .bpt-lift { transition: box-shadow .25s ease, transform .25s ease; }
+  .bpt-lift:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+  .bpt-guide:hover { box-shadow: var(--shadow-lg) !important; transform: translateY(-3px); }
+  .bpt-gal-item img, .bpt-gal-item > div { transition: transform .5s ease; }
+  .bpt-gal-item:hover { transform: scale(1.0); }
+  .bpt-gal-item:hover img { transform: scale(1.08); }
+  .bpt-fab:hover { transform: scale(1.08); }
+  .bpt-navlink:hover { opacity: .8; }
+
+  /* range input */
+  .bpt-range { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px; background: var(--surface-sunken); outline: none; }
+  .bpt-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); cursor: pointer; border: 3px solid #fff; box-shadow: var(--shadow-sm); }
+  .bpt-range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--color-primary); cursor: pointer; border: 3px solid #fff; }
+
+  /* responsive */
+  @media (max-width: 980px) {
+    .bpt-hero-grid { grid-template-columns: 1fr !important; }
+    .bpt-nav { display: none !important; }
+    .bpt-burger { display: inline-flex !important; }
+    .bpt-cab-grid, .bpt-contact-grid { grid-template-columns: 1fr !important; }
+    .bpt-foot-grid { grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
+  }
+  @media (max-width: 640px) {
+    .bpt-stats-grid { grid-template-columns: 1fr 1fr !important; gap: 24px 12px !important; }
+    .bpt-incl { grid-template-columns: 1fr !important; }
+    .bpt-foot-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 520px) { .bpt-hide-sm { display: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bpt-cloud, .bpt-plane, .bpt-float, .bpt-scroll-cue { animation: none !important; }
+    .bpt-fade-1, .bpt-fade-2, .bpt-fade-3, .bpt-fade-4 { opacity: 1 !important; animation: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="_ds/bundelkhand-pride-travels-design-system-75677fb7-5c34-467e-b114-1d87c9b96922/_ds_bundle.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="kit.jsx"></script>
+<script type="text/babel" src="sections-a.jsx"></script>
+<script type="text/babel" src="sections-b.jsx"></script>
+<script type="text/babel" src="sections-c.jsx"></script>
+<script type="text/babel" src="overlays.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#1479B8"/>
+  <path d="M0 74 L30 52 L48 66 L72 40 L100 62 L100 100 L0 100 Z" fill="#0C4A73"/>
+  <circle cx="76" cy="26" r="11" fill="#FFC629"/>
+  <path d="M20 40 L44 30 L40 44 Z" fill="#FF7A33"/>
+</svg>
+</template>
+<style id="__om-edit-overrides"></style>
+</body>
+</html>

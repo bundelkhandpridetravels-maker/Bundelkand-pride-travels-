@@ -1,0 +1,137 @@
+/* Bundelkhand Pride Travels — Color Tokens
+   Base ramps first, semantic aliases below. Bright, warm, travel-energetic palette:
+   Sky/Ocean Blue (primary brand), Sun Yellow (energy accent), Navy (depth/footer/ink),
+   Orange + Coral (conversion accents), Green (success/eco), Gold (premium-only accent). */
+
+:root {
+  /* ---------- Sun Yellow (energy, highlight, badges) ---------- */
+  --yellow-50:  #FFFBEA;
+  --yellow-100: #FFF3C4;
+  --yellow-200: #FFE58A;
+  --yellow-300: #FFD65C;
+  --yellow-400: #FFC629;
+  --yellow-500: #F5B400;
+  --yellow-600: #D69800;
+  --yellow-700: #A6740A;
+  --yellow-800: #7A5709;
+
+  /* ---------- Sky / Ocean Blue (primary brand) ---------- */
+  --sky-50:  #EAF8FE;
+  --sky-100: #CDEFFC;
+  --sky-200: #9BDFF8;
+  --sky-300: #62C9EF;
+  --sky-400: #2EA9E0;
+  --sky-500: #1C93CC;
+  --sky-600: #1479B8;
+  --sky-700: #106093;
+  --sky-800: #0C4A73;
+  --sky-900: #0B3A5C;
+
+  /* ---------- Navy (depth, ink, dark surfaces) ---------- */
+  --navy-500: #123A5E;
+  --navy-600: #0E2A47;
+  --navy-700: #0B2038;
+  --navy-800: #081729;
+  --navy-900: #050F1B;
+
+  /* ---------- Orange (primary CTA accent) ---------- */
+  --orange-300: #FFB37A;
+  --orange-400: #FF9142;
+  --orange-500: #FF7A33;
+  --orange-600: #F4611A;
+  --orange-700: #C74A0F;
+
+  /* ---------- Coral (love / wishlist / alerts) ---------- */
+  --coral-300: #FFB2BF;
+  --coral-400: #FF7F94;
+  --coral-500: #FF5C7A;
+  --coral-600: #E8425F;
+  --coral-700: #C22C48;
+
+  /* ---------- Green (success / confirmed / eco) ---------- */
+  --green-300: #8EE0BB;
+  --green-400: #4FCB92;
+  --green-500: #1FAE7A;
+  --green-600: #16875D;
+  --green-700: #0F6845;
+
+  /* ---------- Gold (premium / luxury label ONLY) ---------- */
+  --gold-300: #F0DEA6;
+  --gold-400: #E4C36B;
+  --gold-500: #C9972B;
+  --gold-600: #A67818;
+
+  /* ---------- Warm neutrals (surfaces, borders, dividers) ---------- */
+  --neutral-0:   #FFFFFF;
+  --neutral-50:  #FFFCF6;
+  --neutral-100: #FBF6EC;
+  --neutral-200: #F2ECDD;
+  --neutral-300: #E4DCC8;
+  --neutral-400: #C9BFA8;
+  --neutral-500: #A79C82;
+  --neutral-600: #7D735C;
+
+  /* ---------- Red (errors only, distinct from coral accent) ---------- */
+  --red-400: #F16A63;
+  --red-500: #E5473E;
+  --red-600: #C6342C;
+
+  /* =====================================================================
+     SEMANTIC ALIASES — components + UI kits reference these, never raw ramps
+     ===================================================================== */
+
+  /* Brand */
+  --color-primary:        var(--sky-600);
+  --color-primary-hover:  var(--sky-700);
+  --color-primary-active: var(--sky-800);
+  --color-primary-soft:   var(--sky-50);
+  --color-primary-border: var(--sky-200);
+
+  --color-secondary:        var(--navy-600);
+  --color-secondary-hover:  var(--navy-700);
+  --color-secondary-soft:   #E9EEF3;
+
+  --color-energy:      var(--yellow-400); /* bright yellow — highlights, "Limited seats" chips */
+  --color-energy-soft: var(--yellow-50);
+
+  --color-cta:         var(--orange-500); /* primary conversion CTA (Book Now) */
+  --color-cta-hover:   var(--orange-600);
+  --color-cta-active:  var(--orange-700);
+
+  --color-love:        var(--coral-500); /* wishlist / hearts */
+  --color-love-hover:  var(--coral-600);
+
+  --color-premium:     var(--gold-500); /* premium/luxury labels only */
+  --color-premium-soft: var(--gold-300);
+
+  /* Semantic feedback */
+  --color-success:      var(--green-500);
+  --color-success-soft: #E6F7EF;
+  --color-warning:      var(--yellow-500);
+  --color-warning-soft: var(--yellow-50);
+  --color-error:        var(--red-500);
+  --color-error-soft:   #FDEBEA;
+  --color-info:         var(--sky-500);
+  --color-info-soft:    var(--sky-50);
+
+  /* Ink / text */
+  --ink-900: var(--navy-700); /* headings */
+  --ink-700: #35506B;         /* body */
+  --ink-500: #64798F;         /* muted / secondary */
+  --ink-300: #9AAAB9;         /* placeholder / disabled */
+  --ink-on-dark: #F4F9FC;
+  --ink-on-dark-muted: #AFC4D6;
+
+  /* Surfaces */
+  --surface-page:    var(--neutral-50);
+  --surface-raised:  var(--neutral-0);
+  --surface-sunken:  var(--neutral-200);
+  --surface-dark:    var(--navy-600);
+  --surface-dark-2:  var(--navy-700);
+
+  /* Borders */
+  --border-subtle: var(--neutral-200);
+  --border:        var(--neutral-300);
+  --border-strong: var(--neutral-400);
+  --border-focus:  var(--sky-500);
+}

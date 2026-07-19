@@ -1,0 +1,223 @@
+<style>
+:root{
+  --doc-bg:#FBFAF7;--doc-text:#17140D;--doc-text-2:#5B5646;--doc-muted:#8C8672;--doc-border:#E8E3D4;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:Georgia,'Iowan Old Style','Palatino Linotype',Palatino,serif;
+  --mono:'SF Mono','Cascadia Code','Roboto Mono',Consolas,monospace;
+  --ink:#0A0E1A;--ink-raised:#141B2C;--cream:#EDE7D6;
+  --gold:#C9A24D;--gold-dim:#8A6E34;--gold-bright:#DDB662;
+  --paper:#F6F3EA;--stone:#6E6658;--mist:#A79F8E;--pine:#2F5D50;--pine-tint:#DCE7E2;
+}
+@media (prefers-color-scheme:dark){:root{--doc-bg:#0D0C09;--doc-text:#F3EFE3;--doc-text-2:#C7C0AC;--doc-muted:#8C8672;--doc-border:#2B2820;}}
+:root[data-theme="dark"]{--doc-bg:#0D0C09;--doc-text:#F3EFE3;--doc-text-2:#C7C0AC;--doc-muted:#8C8672;--doc-border:#2B2820;}
+:root[data-theme="light"]{--doc-bg:#FBFAF7;--doc-text:#17140D;--doc-text-2:#5B5646;--doc-muted:#8C8672;--doc-border:#E8E3D4;}
+*{box-sizing:border-box}
+.pw-root{font-family:var(--sans);background:var(--doc-bg);color:var(--doc-text)}
+.pw-frame{max-width:1180px;margin:0 auto;border:1px solid var(--doc-border);border-radius:16px;overflow:hidden}
+.note{border-bottom:1px dashed var(--doc-border);padding:.6rem 2.5rem;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-dim);display:flex;gap:10px;align-items:baseline}
+.note b{color:var(--doc-muted);font-weight:500}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dim);display:flex;align-items:center;gap:10px;margin-bottom:.9rem}
+.eyebrow::before{content:"";width:20px;height:1px;background:var(--gold-dim)}
+h3.sh{font-size:1.35rem;font-weight:700;margin:0 0 1.25rem;letter-spacing:-.01em}
+
+/* hero */
+.phero{background:linear-gradient(rgba(10,14,26,.55),rgba(10,14,26,.86)),linear-gradient(135deg,#1a3a5c,#0a0e1a);color:var(--cream);padding:4.5rem 2.5rem 2.5rem;position:relative}
+.crumb{font-family:var(--mono);font-size:10.5px;color:var(--mist);letter-spacing:.06em;margin-bottom:2rem}
+.phero-grid{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;flex-wrap:wrap}
+.phero h1{font-family:var(--serif);font-style:italic;font-weight:700;font-size:clamp(1.9rem,3.6vw,2.9rem);margin:0 0 .75rem;line-height:1.15}
+.phero .route{font-family:var(--mono);font-size:11px;color:var(--gold-bright);letter-spacing:.06em;margin-bottom:.6rem}
+.chiprow{display:flex;gap:.5rem;flex-wrap:wrap}
+.chip{border:1px solid rgba(237,231,214,.25);border-radius:99px;padding:.35rem .9rem;font-size:11.5px;color:var(--cream)}
+.chip.gold{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:700}
+.rating{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mist)}
+.rating b{font-family:var(--mono);color:var(--gold);font-size:14px}
+
+/* gallery */
+.gal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:120px 120px;gap:.5rem;padding:1rem 2.5rem;background:var(--ink)}
+.gal div{border-radius:10px}
+.gal .g1{grid-row:span 2}
+.gal .more{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--cream);background:var(--ink-raised);border:1px solid rgba(237,231,214,.15)}
+
+/* body layout */
+.pbody{display:grid;grid-template-columns:1fr 340px;gap:2.5rem;padding:2.5rem;background:var(--doc-bg)}
+.main>section{margin-bottom:3rem}
+.hl-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.hl{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--doc-border);border-radius:11px;padding:.85rem 1rem;font-size:12.5px}
+.hl i{color:var(--pine);font-style:normal;font-family:var(--mono);font-weight:700}
+
+/* itinerary */
+.tl{position:relative;padding-left:2rem}
+.tl::before{content:"";position:absolute;left:.55rem;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--gold),var(--doc-border))}
+.tl-item{position:relative;padding-bottom:1.4rem}
+.tl-item::before{content:"";position:absolute;left:-1.75rem;top:5px;width:12px;height:12px;border-radius:4px;background:var(--gold)}
+.tl-day{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold-dim)}
+.tl-item h5{margin:.2rem 0 .3rem;font-size:.98rem}
+.tl-item p{margin:0;font-size:12.5px;color:var(--doc-text-2);line-height:1.7}
+
+/* hotel/transport cards */
+.hcard{display:flex;gap:1rem;background:#fff;border:1px solid var(--doc-border);border-radius:12px;padding:1rem;margin-bottom:.7rem;align-items:center}
+.hthumb{width:84px;height:64px;border-radius:8px;flex-shrink:0}
+.hcard h6{margin:0 0 .2rem;font-size:.92rem}
+.hcard p{margin:0;font-size:11.5px;color:var(--doc-text-2)}
+.hcard .tag{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--gold-dim);white-space:nowrap}
+
+/* map + weather */
+.map-ph{height:180px;border-radius:12px;background:linear-gradient(135deg,#DCE7E2,#c5d5cd);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--pine);border:1px solid var(--doc-border)}
+.wx-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-top:.8rem}
+.wx{background:#fff;border:1px solid var(--doc-border);border-radius:10px;padding:.7rem;text-align:center}
+.wx b{font-family:var(--mono);font-size:13px;display:block}
+.wx span{font-size:10px;color:var(--doc-muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* reviews & faq (condensed) */
+.rmini{background:#fff;border:1px solid var(--doc-border);border-radius:11px;padding:1rem 1.1rem;margin-bottom:.6rem;font-size:12.5px;color:var(--doc-text-2);font-style:italic}
+.rmini b{display:block;font-style:normal;font-size:11px;color:var(--doc-text);margin-top:.5rem}
+.faq-item{padding:.9rem 0;border-bottom:1px solid var(--doc-border);display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+.faq-item i{font-family:var(--mono);color:var(--doc-muted);font-style:normal}
+
+/* sticky panel */
+.aside{position:relative}
+.book{position:sticky;top:1rem;background:var(--ink);color:var(--cream);border-radius:14px;padding:1.5rem;box-shadow:0 20px 50px rgba(10,14,26,.25)}
+.book .from{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--mist)}
+.book .amt{font-family:var(--mono);font-size:1.9rem;color:var(--gold);margin:.2rem 0 .1rem}
+.book .per{font-size:11px;color:var(--mist);margin-bottom:1.1rem}
+.book .row{display:flex;justify-content:space-between;font-size:12px;color:var(--mist);padding:.5rem 0;border-top:1px solid rgba(237,231,214,.1)}
+.book .row b{color:var(--cream);font-family:var(--mono);font-weight:500}
+.bbtn{background:var(--gold);color:var(--ink);border-radius:8px;text-align:center;font-weight:700;font-size:13.5px;padding:.85rem;margin-top:1.1rem}
+.bbtn2{border:1px solid rgba(237,231,214,.25);color:var(--cream);border-radius:8px;text-align:center;font-weight:600;font-size:12.5px;padding:.7rem;margin-top:.5rem}
+.book .assure{font-size:10.5px;color:var(--mist);text-align:center;margin-top:.8rem;line-height:1.6}
+
+/* related */
+.rel{background:var(--paper);padding:2.5rem}
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.25rem}
+.rel-card{background:#fff;border:1px solid var(--doc-border);border-radius:12px;overflow:hidden}
+.rel-ph{height:90px}
+.rel-b{padding:.8rem 1rem}
+.rel-b h6{margin:0 0 .2rem;font-size:.88rem}
+.rel-b span{font-family:var(--mono);font-size:11px;color:var(--doc-muted)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+<div class="pw-root">
+<h2 class="sr-only">Package detail page wireframe for Bundelkhand Pride Travels with sticky booking panel and annotated section purposes</h2>
+<div class="pw-frame">
+
+<div class="phero">
+  <div class="crumb">Home / Packages / Kashmir / Srinagar, Gulmarg &amp; Pahalgam</div>
+  <div class="phero-grid">
+    <div>
+      <div class="route">DEL → SXR · 4N / 5D · Couple &amp; family</div>
+      <h1>Srinagar, Gulmarg &amp; Pahalgam,<br>unhurried.</h1>
+      <div class="chiprow">
+        <span class="chip gold">Featured</span><span class="chip">Houseboat night</span><span class="chip">Gondola at Gulmarg</span><span class="chip">Private cab</span>
+      </div>
+    </div>
+    <div class="rating"><b>4.9 ★</b> 38 traveller reviews · <span style="text-decoration:underline">verify on Google</span></div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> cinematic full-bleed destination image behind an ink wash; the headline sells the feeling, the mono route line sells the logistics. Rating with a "verify on Google" out-link sits in the hero because price is 200px away — trust must arrive before the number does.</div>
+
+<div class="gal">
+  <div class="g1" style="background:linear-gradient(135deg,#1a3a5c,#0a0e1a)"></div>
+  <div style="background:linear-gradient(135deg,#25321f,#0a0e1a)"></div>
+  <div style="background:linear-gradient(135deg,#2f5d50,#0a0e1a)"></div>
+  <div style="background:linear-gradient(135deg,#3a2a1a,#0a0e1a)"></div>
+  <div class="more">+ 14 photos</div>
+</div>
+<div class="note"><b>Purpose —</b> Airbnb-pattern asymmetric gallery: one dominant hero shot, four supporting, "+14" opens a full lightbox. Real trip photos (not stock) — the gallery is where "is this company real?" gets answered visually.</div>
+
+<div class="pbody">
+  <div class="main">
+    <section>
+      <div class="eyebrow">Highlights</div>
+      <h3 class="sh">Why travellers pick this one</h3>
+      <div class="hl-grid">
+        <div class="hl"><i>✓</i> Overnight on a Dal Lake houseboat, not just a photo stop</div>
+        <div class="hl"><i>✓</i> Gulmarg Gondola tickets pre-arranged — skip the queue</div>
+        <div class="hl"><i>✓</i> Private cab throughout, one named driver</div>
+        <div class="hl"><i>✓</i> Trip lead on WhatsApp from booking to return</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Itinerary</div>
+      <h3 class="sh">Day by day</h3>
+      <div class="tl">
+        <div class="tl-item"><div class="tl-day">Day 1 · Srinagar</div><h5>Arrival &amp; Mughal gardens</h5><p>Airport pickup, Nishat and Shalimar Bagh, evening Shikara ride as the light drops on Dal Lake.</p></div>
+        <div class="tl-item"><div class="tl-day">Day 2 · Gulmarg</div><h5>The meadow of flowers</h5><p>Gondola cable car, snow activities in season, world's highest golf course walk.</p></div>
+        <div class="tl-item"><div class="tl-day">Day 3 · Pahalgam</div><h5>Lidder valley</h5><p>Aru and Betaab valleys, riverside afternoon, overnight in Pahalgam.</p></div>
+        <div class="tl-item"><div class="tl-day">Day 4 · Srinagar</div><h5>Houseboat night</h5><p>Old-city walk, local market, overnight on a heritage houseboat.</p></div>
+        <div class="tl-item"><div class="tl-day">Day 5 · Departure</div><h5>Fly home</h5><p>Breakfast on the water, airport drop.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Stay</div>
+      <h3 class="sh">Hotels &amp; houseboat</h3>
+      <div class="hcard"><div class="hthumb" style="background:linear-gradient(135deg,#1a3a5c,#0a0e1a)"></div><div><h6>Hotel Grand Mahal, Srinagar</h6><p>2 nights · deluxe room · breakfast &amp; dinner</p></div><span class="tag">3-star · inspected</span></div>
+      <div class="hcard"><div class="hthumb" style="background:linear-gradient(135deg,#3a2a1a,#0a0e1a)"></div><div><h6>Heritage houseboat, Dal Lake</h6><p>1 night · lake-facing room · dinner on board</p></div><span class="tag">Verified</span></div>
+      <div class="hcard"><div class="hthumb" style="background:linear-gradient(135deg,#25321f,#0a0e1a)"></div><div><h6>Hotel Pine Spring, Pahalgam</h6><p>1 night · valley view · breakfast &amp; dinner</p></div><span class="tag">3-star · inspected</span></div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Getting around</div>
+      <h3 class="sh">Transport</h3>
+      <div class="hcard"><div class="hthumb" style="background:linear-gradient(135deg,#141B2C,#0a0e1a)"></div><div><h6>Private sedan, all 5 days</h6><p>One named driver · airport pickup &amp; drop · tolls and parking included</p></div><span class="tag">GPS-tracked</span></div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Where &amp; when</div>
+      <h3 class="sh">Map, season &amp; weather</h3>
+      <div class="map-ph">Route map — Srinagar → Gulmarg → Pahalgam (interactive in Phase 1B)</div>
+      <div class="wx-row">
+        <div class="wx"><b>Mar–May</b><span>Blossom · mild</span></div>
+        <div class="wx"><b>Jun–Aug</b><span>Peak · 15–30°C</span></div>
+        <div class="wx"><b>Sep–Nov</b><span>Autumn gold</span></div>
+        <div class="wx"><b>Dec–Feb</b><span>Snow · Gulmarg ski</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Reviews</div>
+      <h3 class="sh">From this exact trip</h3>
+      <div class="rmini">"The houseboat night was the best decision of the trip — and our driver Bashir felt like family by day two."<b>Priya &amp; Arjun Sharma · travelled April 2026</b></div>
+      <div class="rmini">"Everything ran on time. Every hotel matched the photos. That never happens."<b>Kavita Malhotra · travelled June 2026</b></div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Questions</div>
+      <h3 class="sh">Before you book</h3>
+      <div class="faq-item">Is the Gondola ticket included? <i>+</i></div>
+      <div class="faq-item">What's the cancellation policy? <i>+</i></div>
+      <div class="faq-item">Can we customise the hotels or add days? <i>+</i></div>
+    </section>
+  </div>
+
+  <div class="aside">
+    <div class="book">
+      <div class="from">From</div>
+      <div class="amt">₹28,000</div>
+      <div class="per">per couple · 4N/5D · all inclusions listed</div>
+      <div class="row">Duration <b>4N / 5D</b></div>
+      <div class="row">Departure <b>Any date</b></div>
+      <div class="row">Meals <b>Breakfast + dinner</b></div>
+      <div class="row">Transport <b>Private sedan</b></div>
+      <div class="bbtn">Check availability</div>
+      <div class="bbtn2">Ask on WhatsApp</div>
+      <div class="assure">No payment now · full inclusions &amp; exclusions before you pay · replies within 2 hours</div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> the sticky panel keeps price + CTA in view through the whole scroll (desktop); on mobile it collapses to a fixed bottom bar — price left, "Check availability" right — the app-like pattern from Airbnb/Booking. "No payment now" lowers the threshold: the CTA asks for a conversation, not a card.</div>
+
+<div class="rel">
+  <div class="eyebrow">Keep exploring</div>
+  <h3 class="sh" style="margin-bottom:0">Related packages</h3>
+  <div class="rel-grid">
+    <div class="rel-card"><div class="rel-ph" style="background:linear-gradient(135deg,#0a2744,#0a0e1a)"></div><div class="rel-b"><h6>Kashmir Grand — 5N/6D</h6><span>from ₹38,000 / couple</span></div></div>
+    <div class="rel-card"><div class="rel-ph" style="background:linear-gradient(135deg,#25321f,#0a0e1a)"></div><div class="rel-b"><h6>Manali + Kasol Group</h6><span>from ₹28,000 / couple</span></div></div>
+    <div class="rel-card"><div class="rel-ph" style="background:linear-gradient(135deg,#2f5d50,#0a0e1a)"></div><div class="rel-b"><h6>Chopta Tungnath Trek</h6><span>from ₹6,999 / person</span></div></div>
+  </div>
+</div>
+<div class="note" style="border-bottom:none"><b>Purpose —</b> nobody leaves at a dead end: a visitor who scrolled the entire page without converting gets redirected sideways (longer Kashmir trip, different region, cheaper trek) instead of exiting.</div>
+
+</div>
+</div>

@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   Bundelkhand Pride Travels — design tokens
+   Translated from the approved "departures board" design system.
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-ink: #0a0e1a;
+  --color-ink-raised: #141b2c;
+  --color-ink-deep: #080b14;
+  --color-cream: #ede7d6;
+  --color-gold: #c9a24d;
+  /* Darkened from #8a6e34 to clear WCAG AA (4.5:1) on the paper surface,
+     where it's used for small uppercase eyebrow labels. */
+  --color-gold-dim: #846a32;
+  --color-gold-bright: #ddb662;
+  --color-paper: #f6f3ea;
+  --color-bone: #fbfaf7;
+  --color-stone: #6e6658;
+  --color-mist: #a79f8e;
+  --color-line: #e4dfd0;
+  --color-hair: #e8e3d4;
+  --color-pine: #2f5d50;
+  --color-pine-tint: #dce7e2;
+  --color-ink-text: #17140d;
+  --color-ink-text-2: #5b5646;
+  /* Darkened from #8c8672 to clear WCAG AA (4.5:1) on paper/bone. Used for
+     9–11px mono labels, which are far below the large-text exemption. */
+  --color-muted: #716d5c;
+
+  --font-display: var(--ff-display), Georgia, "Times New Roman", serif;
+  --font-sans: var(--ff-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--ff-mono), "SF Mono", ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-bone);
+  color: var(--color-ink-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+
+/* Keyboard focus — visible on every interactive element */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-gold-bright);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Cinematic keyframes ─────────────────────────────────────── */
+@keyframes ken-burns {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to   { transform: scale(1.14) translate3d(-1.5%, -1.5%, 0); }
+}
+@keyframes scene-fade {
+  0%   { opacity: 0; }
+  4%   { opacity: 1; }
+  14%  { opacity: 1; }
+  18%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes intro-fly {
+  0%   { transform: translate3d(-30vw, 32vh, 0) rotate(7deg) scale(0.7); opacity: 0; }
+  18%  { opacity: 1; }
+  82%  { opacity: 1; }
+  100% { transform: translate3d(120vw, -24vh, 0) rotate(7deg) scale(1.06); opacity: 0; }
+}
+@keyframes intro-mark {
+  0%, 26% { opacity: 0; transform: translateY(10px); letter-spacing: 0.42em; }
+  56%     { opacity: 1; transform: translateY(0); letter-spacing: 0.16em; }
+  86%     { opacity: 1; }
+  100%    { opacity: 0; }
+}
+@keyframes intro-line {
+  0%, 26% { transform: scaleX(0); opacity: 0; }
+  56%     { transform: scaleX(1); opacity: 1; }
+  86%     { opacity: 1; }
+  100%    { opacity: 0; }
+}
+
+/* ── Bespoke classes the hero relies on ──────────────────────── */
+.bpt-scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: scene-fade 36s linear infinite;
+  will-change: opacity;
+}
+.bpt-scene > .bpt-scene-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  animation: ken-burns 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.bpt-glass {
+  background: color-mix(in srgb, var(--color-ink-raised) 52%, transparent);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid color-mix(in srgb, var(--color-cream) 16%, transparent);
+}
+.bpt-fade-up {
+  opacity: 0;
+  animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.bpt-d1 { animation-delay: 0.1s; }
+.bpt-d2 { animation-delay: 0.22s; }
+.bpt-d3 { animation-delay: 0.34s; }
+.bpt-d4 { animation-delay: 0.46s; }
+.bpt-d5 { animation-delay: 0.58s; }
+
+/* Respect users who prefer less motion — kill decorative motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bpt-fade-up { opacity: 1; }
+  .bpt-scene:first-child { opacity: 1; }
+}

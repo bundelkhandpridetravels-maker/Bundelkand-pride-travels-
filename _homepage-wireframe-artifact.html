@@ -1,0 +1,375 @@
+<style>
+:root{
+  --doc-bg:#FBFAF7;--doc-text:#17140D;--doc-text-2:#5B5646;--doc-muted:#8C8672;--doc-border:#E8E3D4;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:Georgia,'Iowan Old Style','Palatino Linotype',Palatino,serif;
+  --mono:'SF Mono','Cascadia Code','Roboto Mono',Consolas,monospace;
+  --ink:#0A0E1A;--ink-raised:#141B2C;--cream:#EDE7D6;
+  --gold:#C9A24D;--gold-dim:#8A6E34;--gold-bright:#DDB662;
+  --paper:#F6F3EA;--stone:#6E6658;--mist:#A79F8E;--line:#E4DFD0;--pine:#2F5D50;--pine-tint:#DCE7E2;
+}
+@media (prefers-color-scheme:dark){:root{--doc-bg:#0D0C09;--doc-text:#F3EFE3;--doc-text-2:#C7C0AC;--doc-muted:#8C8672;--doc-border:#2B2820;}}
+:root[data-theme="dark"]{--doc-bg:#0D0C09;--doc-text:#F3EFE3;--doc-text-2:#C7C0AC;--doc-muted:#8C8672;--doc-border:#2B2820;}
+:root[data-theme="light"]{--doc-bg:#FBFAF7;--doc-text:#17140D;--doc-text-2:#5B5646;--doc-muted:#8C8672;--doc-border:#E8E3D4;}
+*{box-sizing:border-box}
+.hw-root{font-family:var(--sans);background:var(--doc-bg);color:var(--doc-text)}
+.hw-frame{max-width:1180px;margin:0 auto;border:1px solid var(--doc-border);border-radius:16px;overflow:hidden}
+.note{background:var(--doc-bg);border-bottom:1px dashed var(--doc-border);padding:.6rem 2.5rem;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-dim);display:flex;gap:10px;align-items:baseline}
+.note b{color:var(--doc-muted);font-weight:500}
+.section{position:relative}
+.wrap{max-width:1120px;margin:0 auto;padding:0 2.5rem}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dim);display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.eyebrow::before{content:"";width:20px;height:1px;background:var(--gold-dim)}
+h2.h{font-family:var(--sans);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:0 0 .5rem;text-wrap:balance}
+.lede{color:var(--doc-text-2);font-size:.95rem;max-width:40em}
+
+/* HERO */
+.hero{background:var(--ink);color:var(--cream);padding:4.5rem 0 6rem;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 78% 20%,rgba(201,162,77,.14),transparent 55%)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem 3rem;position:relative;z-index:2}
+.brand{display:flex;align-items:center;gap:10px}
+.orb{width:36px;height:36px;border-radius:9px;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:12px}
+.brandname{font-size:13px;font-weight:700;letter-spacing:.03em}
+.brandsub{font-size:9.5px;color:var(--mist);letter-spacing:.14em;text-transform:uppercase}
+.navlinks{display:flex;gap:2rem;font-size:13px;color:var(--mist)}
+.navcta{background:var(--gold);color:var(--ink);font-size:12.5px;font-weight:700;padding:.6rem 1.2rem;border-radius:7px}
+.hero-body{position:relative;z-index:2;padding:0 2.5rem;display:grid;grid-template-columns:1.15fr .85fr;gap:3rem;align-items:center}
+.hero-headline{font-family:var(--serif);font-style:italic;font-weight:700;font-size:clamp(2.1rem,4.2vw,3.4rem);line-height:1.12;letter-spacing:-.01em}
+.hero-headline em{color:var(--gold)}
+.hero-sub{color:var(--mist);font-size:1rem;max-width:34em;margin:1.25rem 0 2rem;line-height:1.8}
+.hero-btns{display:flex;gap:.75rem}
+.hbtn-p{background:var(--gold);color:var(--ink);font-weight:700;font-size:14px;padding:.85rem 1.6rem;border-radius:7px}
+.hbtn-s{border:1px solid rgba(237,231,214,.28);color:var(--cream);font-weight:600;font-size:14px;padding:.85rem 1.6rem;border-radius:7px}
+.hero-stats{display:flex;gap:2.25rem;margin-top:3rem;padding-top:1.75rem;border-top:1px solid rgba(237,231,214,.12)}
+.stat b{display:block;font-family:var(--mono);font-size:1.3rem;color:var(--gold)}
+.stat span{font-size:10.5px;color:var(--mist);text-transform:uppercase;letter-spacing:.08em}
+.hero-card{background:var(--ink-raised);border:1px solid rgba(237,231,214,.1);border-radius:14px;padding:1.4rem;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.hero-card .route{font-family:var(--mono);font-size:10.5px;color:var(--gold-bright);letter-spacing:.06em}
+.hero-card h4{font-family:var(--serif);font-style:italic;font-size:1.35rem;margin:.5rem 0 .75rem}
+.hero-card .price{font-family:var(--mono);font-size:1.4rem;color:var(--gold);margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(237,231,214,.1)}
+.hero-card .price small{font-family:var(--sans);font-size:10px;color:var(--mist);display:block;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+/* SEARCH */
+.search-wrap{margin:-3rem 2.5rem 0;position:relative;z-index:3}
+.search-bar{background:#fff;border-radius:14px;box-shadow:0 20px 50px rgba(10,14,26,.16);padding:1rem 1.25rem;display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr auto;gap:0}
+.search-field{padding:.4rem 1.1rem;border-right:1px solid var(--doc-border)}
+.search-field:last-of-type{border-right:none}
+.search-field label{display:block;font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--doc-muted);margin-bottom:3px}
+.search-field .val{font-size:13.5px;font-weight:600;color:var(--doc-text)}
+.search-go{background:var(--ink);color:var(--cream);border-radius:9px;padding:0 1.6rem;font-size:13px;font-weight:700;display:flex;align-items:center;white-space:nowrap}
+
+/* generic light section */
+.sec-light{background:var(--doc-bg);padding:5rem 0}
+.sec-paper{background:var(--paper);padding:5rem 0}
+
+/* destinations */
+.dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.25rem}
+.dcard{border-radius:13px;overflow:hidden;border:1px solid var(--doc-border);background:#fff}
+.dph{height:120px;position:relative}
+.dph .rc{position:absolute;bottom:8px;left:10px;font-family:var(--mono);font-size:10px;color:#fff;letter-spacing:.04em;opacity:.85}
+.dbody{padding:.85rem 1rem 1rem}
+.dbody h5{margin:0 0 3px;font-size:.95rem;font-weight:700}
+.dbody span{font-family:var(--mono);font-size:11px;color:var(--doc-muted)}
+
+/* packages */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-top:2.25rem}
+.pcard{border-radius:14px;overflow:hidden;border:1px solid var(--doc-border);background:#fff}
+.pph{height:150px;position:relative}
+.pph .route{position:absolute;bottom:10px;left:12px;font-family:var(--mono);color:var(--gold-bright);font-size:11px}
+.pph .badge{position:absolute;top:10px;left:12px;background:var(--gold);color:var(--ink);font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:5px;font-weight:700}
+.pbody{padding:1.1rem 1.2rem 1.3rem}
+.pbody .kick{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--doc-muted);margin-bottom:5px}
+.pbody h4{margin:0 0 .5rem;font-size:1.05rem}
+.pbody p{font-size:12.5px;color:var(--doc-text-2);margin:0}
+.pprice{display:flex;justify-content:space-between;align-items:baseline;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--doc-border)}
+.pprice b{font-family:var(--mono);font-size:1.15rem}
+.pprice small{font-family:var(--sans);font-size:10px;color:var(--doc-muted);text-transform:uppercase}
+
+/* why us */
+.wgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.25rem}
+.wcard{background:#fff;border:1px solid var(--doc-border);border-radius:13px;padding:1.6rem}
+.wicon{width:38px;height:38px;border-radius:10px;background:var(--pine-tint);color:var(--pine);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:13px;margin-bottom:1rem}
+.wcard h5{margin:0 0 .4rem;font-size:.98rem}
+.wcard p{font-size:12.5px;color:var(--doc-text-2);margin:0;line-height:1.6}
+
+/* categories */
+.cat-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:2rem}
+.cat-pill{border:1px solid var(--doc-border);background:#fff;border-radius:99px;padding:.65rem 1.3rem;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+.cat-pill .n{font-family:var(--mono);font-size:10px;color:var(--doc-muted)}
+
+/* departures */
+.dep-board{margin-top:2.25rem;border:1px solid rgba(237,231,214,.1);border-radius:14px;overflow:hidden}
+.dep-row{display:grid;grid-template-columns:70px 1.3fr 100px 130px 110px;gap:1rem;align-items:center;padding:1rem 1.4rem;border-bottom:1px solid rgba(237,231,214,.08);background:var(--ink-raised);color:var(--cream)}
+.dep-row:last-child{border-bottom:none}
+.dep-row .day{font-family:var(--mono);font-size:11px;color:var(--gold-bright);text-align:center;border-right:1px solid rgba(237,231,214,.12);padding-right:1rem}
+.dep-row .rt{font-family:var(--mono);font-size:12px;color:var(--mist)}
+.dep-row .st{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;padding:3px 9px;border-radius:5px;background:rgba(46,213,115,.14);color:#7CE3A8;justify-self:start}
+.dep-row .price{font-family:var(--mono);font-size:13px;color:var(--gold)}
+
+/* reviews */
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-top:2.25rem}
+.rcard{background:#fff;border:1px solid var(--doc-border);border-radius:13px;padding:1.5rem}
+.stars{color:var(--gold-dim);font-size:12px;margin-bottom:.7rem}
+.rcard p{font-size:12.5px;color:var(--doc-text-2);font-style:italic;line-height:1.7;margin:0 0 1rem}
+.rperson{display:flex;align-items:center;gap:9px}
+.rav{width:32px;height:32px;border-radius:9px;background:var(--pine-tint);color:var(--pine);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:11px}
+.rname{font-size:12px;font-weight:700}
+.rtrip{font-family:var(--mono);font-size:10px;color:var(--gold-dim)}
+
+/* instagram */
+.igrid{display:grid;grid-template-columns:repeat(6,1fr);gap:.6rem;margin-top:2.25rem}
+.itile{aspect-ratio:1;border-radius:9px}
+
+/* blog */
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-top:2.25rem}
+.bcard{background:#fff;border:1px solid var(--doc-border);border-radius:13px;overflow:hidden}
+.bph{height:110px}
+.bbody{padding:1rem 1.1rem 1.2rem}
+.bbody .kick{font-family:var(--mono);font-size:10px;color:var(--doc-muted);text-transform:uppercase;margin-bottom:5px}
+.bbody h5{margin:0;font-size:.95rem}
+
+/* faq */
+.faq-list{margin-top:2rem;border-top:1px solid var(--doc-border)}
+.faq-item{padding:1.15rem 0;border-bottom:1px solid var(--doc-border);display:flex;justify-content:space-between;align-items:center}
+.faq-item span{font-weight:600;font-size:14px}
+.faq-item i{font-family:var(--mono);color:var(--doc-muted);font-size:14px}
+
+/* newsletter */
+.news{background:var(--ink);color:var(--cream);padding:3.5rem 0;text-align:center}
+.news h3{font-family:var(--serif);font-style:italic;font-size:1.9rem;margin:0 0 .5rem}
+.news p{color:var(--mist);font-size:.95rem;margin:0 0 1.5rem}
+.news-form{display:flex;max-width:420px;margin:0 auto;gap:.5rem}
+.news-form input{flex:1;background:var(--ink-raised);border:1px solid rgba(237,231,214,.15);border-radius:8px;padding:.75rem 1rem;color:var(--cream);font-size:13px}
+.news-form button{background:var(--gold);color:var(--ink);border-radius:8px;padding:.75rem 1.3rem;font-weight:700;font-size:13px}
+
+/* footer */
+.foot{background:#080B14;color:var(--mist);padding:3.5rem 0 2rem}
+.foot-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:2rem}
+.foot-col h6{color:var(--cream);font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 1rem;font-family:var(--mono);font-weight:500}
+.foot-col div{font-size:12.5px;line-height:2.1}
+.foot-bottom{margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid rgba(237,231,214,.08);font-size:11px;display:flex;justify-content:space-between}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+<div class="hw-root">
+<h2 class="sr-only">Bundelkhand Pride Travels homepage wireframe with annotated purpose for each section</h2>
+<div class="hw-frame">
+
+<div class="section hero">
+  <nav class="nav">
+    <div class="brand"><div class="orb">BPT</div><div><div class="brandname">Bundelkhand Pride Travels</div><div class="brandsub">Plans like an engineer</div></div></div>
+    <div class="navlinks"><span>Packages</span><span>Destinations</span><span>Group Trips</span><span>Treks</span><span>School Tours</span><span>Contact</span></div>
+    <div class="navcta">Plan my trip</div>
+  </nav>
+  <div class="hero-body">
+    <div>
+      <div class="eyebrow" style="color:var(--gold)">Premium travel experiences across India</div>
+      <h1 class="hero-headline">Plans like an <em>engineer.</em><br>Cares like <em>family.</em></h1>
+      <p class="hero-sub">From Kashmir's valleys to weekend Himalayan treks — every itinerary is built by a real travel lead, tracked door to door, and backed by a team that answers the phone.</p>
+      <div class="hero-btns"><div class="hbtn-p">Explore packages</div><div class="hbtn-s">Talk to a travel lead</div></div>
+      <div class="hero-stats">
+        <div class="stat"><b>500+</b><span>Travellers hosted</span></div>
+        <div class="stat"><b>20+</b><span>Destinations</span></div>
+        <div class="stat"><b>24/7</b><span>Support</span></div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="route">DEL → SXR · Fixed Friday</div>
+      <h4>Kashmir Group Batch</h4>
+      <div style="font-size:12.5px;color:var(--mist);line-height:1.7">Srinagar · Gulmarg · Pahalgam<br>4N / 5D · Jammu pickup 10 AM</div>
+      <div class="price">₹13,000<small>from · per person</small></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> establish trust and premium positioning in the first three seconds; real numbers do the convincing, not adjectives. <b>Media treatment:</b> full-bleed cinematic destination photography behind the ink wash; a muted, poster-first ambient video loads on desktop only after the page is interactive — mobile always gets the still image, protecting LCP and data plans. The single package card previews the product before the visitor searches.</div>
+
+<div class="section" style="background:var(--paper);padding-bottom:5rem">
+  <div class="search-wrap">
+    <div class="search-bar">
+      <div class="search-field"><label>Destination</label><div class="val">Where to? — Kashmir, Manali…</div></div>
+      <div class="search-field"><label>Trip type</label><div class="val">Couple, family, group…</div></div>
+      <div class="search-field"><label>When</label><div class="val">Pick your dates</div></div>
+      <div class="search-field"><label>Travellers</label><div class="val">2 adults</div></div>
+      <div class="search-go">Search trips</div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> an Airbnb/Booking-pattern search bar converts passive browsing into an intent-led flow immediately after the hero, before the visitor has to decide whether to keep scrolling.</div>
+
+<div class="section sec-light">
+  <div class="wrap">
+    <div class="eyebrow">Popular destinations</div>
+    <h2 class="h">Where our travellers go most</h2>
+    <p class="lede">Handpicked regions we run trips to every season, not a stock list of every place on the map.</p>
+    <div class="dgrid">
+      <div class="dcard"><div class="dph" style="background:linear-gradient(135deg,#1a3a5c,#0a0e1a)"><span class="rc">Kashmir</span></div><div class="dbody"><h5>Kashmir</h5><span>from ₹13,000</span></div></div>
+      <div class="dcard"><div class="dph" style="background:linear-gradient(135deg,#25321f,#0a0e1a)"><span class="rc">Manali</span></div><div class="dbody"><h5>Manali &amp; Kasol</h5><span>from ₹10,000</span></div></div>
+      <div class="dcard"><div class="dph" style="background:linear-gradient(135deg,#3a2a1a,#0a0e1a)"><span class="rc">Himachal</span></div><div class="dbody"><h5>Shimla &amp; Himachal</h5><span>from ₹13,000</span></div></div>
+      <div class="dcard"><div class="dph" style="background:linear-gradient(135deg,#2f5d50,#0a0e1a)"><span class="rc">Jim Corbett</span></div><div class="dbody"><h5>Jim Corbett</h5><span>from ₹12,000</span></div></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> destination-led browsing for visitors who know roughly where they want to go but not yet which package — photography and price-anchor together trigger desire before commitment.</div>
+
+<div class="section sec-paper">
+  <div class="wrap">
+    <div class="eyebrow">Featured packages</div>
+    <h2 class="h">Curated, not just listed</h2>
+    <p class="lede">A short list our team stands behind, so first-time visitors aren't left comparing forty near-identical itineraries.</p>
+    <div class="pgrid">
+      <div class="pcard"><div class="pph" style="background:linear-gradient(135deg,#1a3a5c,#0a0e1a)"><span class="badge">Featured</span><span class="route">DEL → SXR</span></div><div class="pbody"><div class="kick">Kashmir · Couple</div><h4>Srinagar, Gulmarg &amp; Pahalgam</h4><p>Houseboat evening on Dal Lake, Gondola at Gulmarg.</p><div class="pprice"><b>₹28,000</b><small>from · per couple</small></div></div></div>
+      <div class="pcard"><div class="pph" style="background:linear-gradient(135deg,#25321f,#0a0e1a)"><span class="badge">Popular</span><span class="route">DEL → KUU</span></div><div class="pbody"><div class="kick">Himachal · Group · Every Friday</div><h4>Manali + Kasol Group</h4><p>Atal Tunnel, Chalal trek, riverside bonfire.</p><div class="pprice"><b>₹28,000</b><small>from · per couple</small></div></div></div>
+      <div class="pcard"><div class="pph" style="background:linear-gradient(135deg,#2f5d50,#0a0e1a)"><span class="badge">Trek</span><span class="route">RSH → TGN</span></div><div class="pbody"><div class="kick">Trek · Moderate</div><h4>Chopta &amp; Tungnath Summit</h4><p>World's highest Shiva temple, Chandrashila sunrise.</p><div class="pprice"><b>₹6,999</b><small>from · per person</small></div></div></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> converts browsing desire into a concrete, priced decision. Curation itself is the trust signal — "we picked the best three" reduces the decision fatigue a full catalog would create here.</div>
+
+<div class="section sec-light">
+  <div class="wrap">
+    <div class="eyebrow">Why Bundelkhand Pride</div>
+    <h2 class="h">The reassurance, right after the price</h2>
+    <div class="wgrid">
+      <div class="wcard"><div class="wicon">✓</div><h5>Verified hotels only</h5><p>Every property is personally inspected before it's offered — no surprises on arrival.</p></div>
+      <div class="wcard"><div class="wicon">◎</div><h5>A dedicated trip lead</h5><p>One named person accompanies every group, trained for both logistics and emergencies.</p></div>
+      <div class="wcard"><div class="wicon">$</div><h5>Transparent pricing</h5><p>Inclusions and exclusions are listed in full before you pay a rupee — no hidden add-ons.</p></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> travel is a high-stakes, intangible purchase — this section exists specifically to answer "can I trust these people with my family" right when price has just raised that question.</div>
+
+<div class="section sec-paper">
+  <div class="wrap">
+    <div class="eyebrow">Travel categories</div>
+    <h2 class="h">Built for how you're actually travelling</h2>
+    <div class="cat-row">
+      <div class="cat-pill">Honeymoon &amp; couples <span class="n">18</span></div>
+      <div class="cat-pill">Family &amp; kids <span class="n">24</span></div>
+      <div class="cat-pill">Group departures <span class="n">12</span></div>
+      <div class="cat-pill">Himalayan treks <span class="n">9</span></div>
+      <div class="cat-pill">School &amp; college tours <span class="n">6</span></div>
+      <div class="cat-pill">International <span class="n">5</span></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> self-selection for very different intents on one homepage — a honeymoon couple and a school trip coordinator should each feel this site was built for them specifically, not travellers in general.</div>
+
+<div class="section" style="background:var(--ink);padding:5rem 0">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--gold)">Departures board</div>
+    <h2 class="h" style="color:var(--cream)">Upcoming group departures</h2>
+    <p class="lede" style="color:var(--mist)">Fixed dates, fixed seats — booked the way a flight manifest fills up, not an open-ended enquiry.</p>
+    <div class="dep-board">
+      <div class="dep-row"><div class="day">FRI</div><div>Delhi → Manali · Volvo package · 2N3D</div><div class="rt">₹10,000</div><div class="st">Open</div><div class="price">/person</div></div>
+      <div class="dep-row"><div class="day">FRI</div><div>Delhi → Manali + Kasol · 5N6D</div><div class="rt">₹28,000</div><div class="st">Open</div><div class="price">/couple</div></div>
+      <div class="dep-row"><div class="day">OCT 13</div><div>Jammu → Kashmir Group Batch 2026 · 4N5D</div><div class="rt">₹13,000</div><div class="st" style="background:rgba(255,165,0,.14);color:#F0B75E">3 seats left</div><div class="price">/person</div></div>
+      <div class="dep-row"><div class="day">DEC 28</div><div>Jammu → Kashmir New Year 2026–27 · 5N6D</div><div class="rt">₹13,000</div><div class="st" style="background:rgba(255,71,87,.14);color:#F58E8E">Limited</div><div class="price">/person</div></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> scarcity and social proof together — fixed dates with visible seat counts create real urgency (not manufactured countdown timers), and "group" implies safety in numbers for solo/family bookers.</div>
+
+<div class="section sec-paper" style="padding:4.5rem 0">
+  <div class="wrap" style="display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center">
+    <div>
+      <div class="eyebrow">AI trip planning · Coming soon</div>
+      <h2 class="h">Tell us the trip. We'll engineer it.</h2>
+      <p class="lede">Describe your dates, budget and travel style in one message — our AI travel planner drafts a full itinerary, and a human travel lead verifies every hotel and transfer before it reaches you.</p>
+      <div style="display:flex;gap:.5rem;margin-top:1.5rem;max-width:400px">
+        <div style="flex:1;border:1px solid var(--doc-border);background:#fff;border-radius:8px;padding:.7rem 1rem;font-size:12.5px;color:var(--doc-muted)">you@email.com</div>
+        <div style="background:var(--ink);color:var(--cream);border-radius:8px;padding:.7rem 1.2rem;font-size:12.5px;font-weight:700">Join the waitlist</div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--doc-border);border-radius:14px;padding:1.4rem">
+      <div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--gold-dim);margin-bottom:.8rem">Preview</div>
+      <div style="background:var(--paper);border-radius:10px;padding:.8rem 1rem;font-size:12.5px;color:var(--doc-text-2);margin-bottom:.6rem">"5 days in Kashmir under ₹35k for two, we love quiet places"</div>
+      <div style="border:1px solid var(--doc-border);border-radius:10px;padding:.8rem 1rem;font-size:12px;color:var(--doc-text-2);line-height:1.7">Draft itinerary → Srinagar (2N, houseboat) · Pahalgam (2N, Aru Valley) · offbeat Gulmarg day trip · ₹33,400 est.<br><span style="font-family:var(--mono);font-size:10px;color:var(--pine)">✓ Verified by a human travel lead before you see it</span></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> plants the "AI-powered travel company" flag now, before the feature ships — and captures a waitlist email instead of making a dead promise, feeding the same lead pipeline as the newsletter. The "verified by a human" line converts the AI claim from gimmick into trust.</div>
+
+<div class="section sec-light">
+  <div class="wrap">
+    <div class="eyebrow">Customer reviews</div>
+    <h2 class="h">What travellers say after, not before</h2>
+    <div style="display:inline-flex;align-items:center;gap:10px;margin-top:.75rem;border:1px solid var(--doc-border);background:#fff;border-radius:99px;padding:.5rem 1.1rem">
+      <span style="font-weight:700;font-size:13px">G</span>
+      <span style="font-family:var(--mono);font-size:13px;font-weight:600">4.9 ★</span>
+      <span style="font-size:12px;color:var(--doc-muted)">from 120+ Google reviews</span>
+    </div>
+    <div class="rgrid">
+      <div class="rcard"><div class="stars">★★★★★</div><p>"Kashmir with Bundelkhand Pride was a dream — the houseboat, the Gulmarg gondola, the Shikara at sunset. Every detail was handled."</p><div class="rperson"><div class="rav">PS</div><div><div class="rname">Priya Sharma</div><div class="rtrip">Kashmir Honeymoon</div></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p>"Our school group of 45 went to Jim Corbett — the safari was thrilling, the coordinator was exceptional. Highly recommend for school tours."</p><div class="rperson"><div class="rav">DG</div><div><div class="rname">Mrs. Deepa Gupta</div><div class="rtrip">School Tour — Jim Corbett</div></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p>"Chopta Tungnath was life-changing. Standing at the world's highest Shiva temple with the Himalayan panorama — words fail me."</p><div class="rperson"><div class="rav">NT</div><div><div class="rname">Neha Tiwari</div><div class="rtrip">Chopta Tungnath Trek</div></div></div></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> social proof is the strongest trust lever for an intangible, high-cost purchase — named people, named trips, specific details make it credible. The Google rating badge borrows third-party authority the site can't grant itself; it links out to the real Google profile so skeptics can verify.</div>
+
+<div class="section sec-paper">
+  <div class="wrap">
+    <div class="eyebrow">On Instagram</div>
+    <h2 class="h">@bundelkhand_pridetravels</h2>
+    <div class="igrid">
+      <div class="itile" style="background:linear-gradient(160deg,#1a3a5c,#0a0e1a)"></div>
+      <div class="itile" style="background:linear-gradient(160deg,#25321f,#0a0e1a)"></div>
+      <div class="itile" style="background:linear-gradient(160deg,#3a2a1a,#0a0e1a)"></div>
+      <div class="itile" style="background:linear-gradient(160deg,#2f5d50,#0a0e1a)"></div>
+      <div class="itile" style="background:linear-gradient(160deg,#4a2f1a,#0a0e1a)"></div>
+      <div class="itile" style="background:linear-gradient(160deg,#1a2a4a,#0a0e1a)"></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> real, recent, unpolished traveller content signals "this is a living, active business," and gives visitors one more low-commitment way to verify authenticity before they hand over a deposit.</div>
+
+<div class="section sec-light">
+  <div class="wrap">
+    <div class="eyebrow">Travel inspiration</div>
+    <h2 class="h">From the journal</h2>
+    <div class="bgrid">
+      <div class="bcard"><div class="bph" style="background:linear-gradient(135deg,#1a3a5c,#0a0e1a)"></div><div class="bbody"><div class="kick">Planning</div><h5>Best time to visit Kashmir, month by month</h5></div></div>
+      <div class="bcard"><div class="bph" style="background:linear-gradient(135deg,#2f5d50,#0a0e1a)"></div><div class="bbody"><div class="kick">Trekking</div><h5>What to actually pack for a Himalayan trek</h5></div></div>
+      <div class="bcard"><div class="bph" style="background:linear-gradient(135deg,#3a2a1a,#0a0e1a)"></div><div class="bbody"><div class="kick">Groups</div><h5>Planning a school tour: a coordinator's checklist</h5></div></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> top-of-funnel SEO content for visitors not ready to book, and an authority signal — a company that writes a real packing list for its own treks clearly runs them, rather than reselling someone else's.</div>
+
+<div class="section sec-paper">
+  <div class="wrap" style="max-width:760px">
+    <div class="eyebrow">Frequently asked</div>
+    <h2 class="h">Before you ask, we'll answer</h2>
+    <div class="faq-list">
+      <div class="faq-item"><span>What's included in the package price?</span><i>+</i></div>
+      <div class="faq-item"><span>What's your cancellation and refund policy?</span><i>+</i></div>
+      <div class="faq-item"><span>Do you offer group or school discounts?</span><i>+</i></div>
+      <div class="faq-item"><span>How do fixed Friday departures work?</span><i>+</i></div>
+    </div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> removes the last objections right before the final conversion push — every question here is one that would otherwise become a support call or, worse, an abandoned enquiry.</div>
+
+<div class="section news">
+  <div class="wrap">
+    <h3>Get fixed-departure alerts first</h3>
+    <p>New Friday batches and trek dates, before they show up on the site.</p>
+    <div class="news-form"><input placeholder="you@email.com" /><button>Notify me</button></div>
+  </div>
+</div>
+<div class="note"><b>Purpose —</b> the low-commitment fallback conversion for visitors not ready to book today — captures intent instead of losing them entirely, feeds the future email-automation pipeline directly.</div>
+
+<div class="section foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col"><div class="brand" style="margin-bottom:1rem"><div class="orb">BPT</div><div><div class="brandname" style="color:var(--cream)">Bundelkhand Pride Travels</div></div></div><div style="max-width:24em">Premium travel experiences across India — plans like an engineer, cares like family. Headquartered in Jhansi, serving travellers nationwide and abroad.</div></div>
+      <div class="foot-col"><h6>Explore</h6><div>Packages<br>Destinations<br>Group departures<br>Treks<br>School tours</div></div>
+      <div class="foot-col"><h6>Company</h6><div>About us<br>Reviews<br>Journal<br>Contact</div></div>
+      <div class="foot-col"><h6>Get in touch</h6><div>+91 92351 21325<br>WhatsApp us<br>Jhansi, Uttar Pradesh</div></div>
+    </div>
+    <div class="foot-bottom"><span>© 2026 Bundelkhand Pride Travels</span><span>Privacy · Terms</span></div>
+  </div>
+</div>
+<div class="note" style="border-bottom:none"><b>Purpose —</b> utility and legitimacy signals last — full contact detail, legal links, and a WhatsApp path for anyone who scrolled the whole page without converting on anything above.</div>
+
+</div>
+</div>

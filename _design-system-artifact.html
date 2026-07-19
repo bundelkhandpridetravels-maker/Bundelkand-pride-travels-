@@ -1,0 +1,263 @@
+<style>
+:root{
+  --doc-bg:#FBFAF7;--doc-surface:#FFFFFF;--doc-text:#17140D;--doc-text-2:#5B5646;
+  --doc-muted:#8C8672;--doc-border:#E8E3D4;--doc-border-2:#DAD4C0;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:Georgia,'Iowan Old Style','Palatino Linotype',Palatino,serif;
+  --mono:'SF Mono','Cascadia Code','Roboto Mono',Consolas,monospace;
+  --ink:#0A0E1A;--ink-raised:#141B2C;--cream:#EDE7D6;
+  --gold:#C9A24D;--gold-dim:#8A6E34;--gold-bright:#DDB662;
+  --paper:#F6F3EA;--stone:#6E6658;--mist:#A79F8E;--line:#E4DFD0;--pine:#2F5D50;--pine-tint:#DCE7E2;
+}
+@media (prefers-color-scheme:dark){
+  :root{--doc-bg:#0D0C09;--doc-surface:#17140D;--doc-text:#F3EFE3;--doc-text-2:#C7C0AC;--doc-muted:#8C8672;--doc-border:#2B2820;--doc-border-2:#3A3628;}
+}
+:root[data-theme="dark"]{--doc-bg:#0D0C09;--doc-surface:#17140D;--doc-text:#F3EFE3;--doc-text-2:#C7C0AC;--doc-muted:#8C8672;--doc-border:#2B2820;--doc-border-2:#3A3628;}
+:root[data-theme="light"]{--doc-bg:#FBFAF7;--doc-surface:#FFFFFF;--doc-text:#17140D;--doc-text-2:#5B5646;--doc-muted:#8C8672;--doc-border:#E8E3D4;--doc-border-2:#DAD4C0;}
+*{box-sizing:border-box}
+.eds-root{font-family:var(--sans);color:var(--doc-text);background:var(--doc-bg);line-height:1.6;padding:0 0 6rem}
+.eds-root h1,.eds-root h2,.eds-root h3{font-family:var(--sans);text-wrap:balance;margin:0}
+.eds-shell{max-width:1040px;margin:0 auto;padding:0 2rem}
+.eds-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dim);display:flex;align-items:center;gap:10px;margin-bottom:.85rem}
+.eds-eyebrow::before{content:"";width:22px;height:1px;background:var(--gold-dim)}
+.eds-cover{background:var(--ink);color:var(--cream);padding:5rem 0 4rem;margin-bottom:4.5rem}
+.eds-cover .eds-shell{max-width:1040px}
+.eds-cover .eds-eyebrow{color:var(--gold)}
+.eds-cover .eds-eyebrow::before{background:var(--gold)}
+.eds-word{font-family:var(--serif);font-style:italic;font-weight:700;font-size:clamp(2.4rem,5.5vw,4rem);line-height:1.16;letter-spacing:-.01em;color:var(--cream);margin-bottom:.75rem}
+.eds-word em{color:var(--gold);font-style:italic}
+.eds-tag{font-size:1.05rem;color:var(--mist);max-width:36em;margin-top:.75rem}
+.eds-cover-meta{display:flex;gap:2.5rem;margin-top:2.75rem;padding-top:1.75rem;border-top:1px solid rgba(237,231,214,.15);font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--mist);text-transform:uppercase}
+.eds-cover-meta b{display:block;color:var(--cream);font-family:var(--sans);font-size:14px;text-transform:none;letter-spacing:0;margin-top:4px;font-weight:600}
+section.eds-sec{margin-bottom:4.75rem}
+.eds-h2{font-size:1.7rem;font-weight:600;letter-spacing:-.01em;margin-bottom:.5rem}
+.eds-lede{color:var(--doc-text-2);max-width:56em;font-size:.98rem;margin-bottom:2.25rem}
+.eds-grid{display:grid;gap:1rem}
+.g-6{grid-template-columns:repeat(6,1fr)}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.g-2{grid-template-columns:repeat(2,1fr)}
+.g-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:860px){.g-6{grid-template-columns:repeat(3,1fr)}.g-3{grid-template-columns:1fr 1fr}.g-4{grid-template-columns:1fr 1fr}}
+.swatch{border-radius:10px;overflow:hidden;border:1px solid var(--doc-border)}
+.swatch .fill{height:88px}
+.swatch .meta{padding:.7rem .8rem;background:var(--doc-surface)}
+.swatch .name{font-weight:600;font-size:13px}
+.swatch .hex{font-family:var(--mono);font-size:11px;color:var(--doc-muted);margin-top:2px}
+.swatch .use{font-size:11.5px;color:var(--doc-text-2);margin-top:6px;line-height:1.5}
+.type-row{display:flex;align-items:baseline;gap:1.5rem;padding:1.5rem 0;border-top:1px solid var(--doc-border)}
+.type-row:last-child{border-bottom:1px solid var(--doc-border)}
+.type-meta{width:150px;flex-shrink:0;font-family:var(--mono);font-size:11px;color:var(--doc-muted);line-height:1.7}
+.type-meta b{display:block;color:var(--doc-text-2);font-family:var(--sans);font-size:12px;font-weight:600}
+.t-display{font-family:var(--serif);font-style:italic;font-weight:700;color:var(--doc-text)}
+.t-ui{font-family:var(--sans);font-weight:600;color:var(--doc-text)}
+.t-mono{font-family:var(--mono);color:var(--doc-text);letter-spacing:.02em}
+.panel{background:var(--doc-surface);border:1px solid var(--doc-border);border-radius:14px;padding:2rem}
+.panel-dark{background:var(--ink);border-radius:14px;padding:2rem}
+.row-wrap{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center}
+.btn{font-family:var(--sans);font-size:14px;font-weight:600;border-radius:7px;padding:.7rem 1.35rem;cursor:pointer;display:inline-flex;align-items:center;gap:8px;border:1px solid transparent;transition:transform .15s ease,opacity .15s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.btn-primary-dark{background:var(--gold);color:var(--ink)}
+.btn-secondary{background:transparent;color:var(--doc-text);border-color:var(--doc-border-2)}
+.btn-secondary-dark{background:transparent;color:var(--cream);border-color:rgba(237,231,214,.3)}
+.btn-ghost{background:transparent;color:var(--doc-text-2);border-color:transparent;padding-left:.3rem;padding-right:.3rem}
+.btn-sm{padding:.5rem 1rem;font-size:12.5px}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.field-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--doc-muted);display:block;margin-bottom:6px}
+.field{width:100%;font-family:var(--sans);font-size:14px;padding:.75rem .9rem;border-radius:8px;border:1px solid var(--doc-border-2);background:var(--doc-bg);color:var(--doc-text)}
+.field:focus{outline:none;border-color:var(--gold-dim);box-shadow:0 0 0 3px rgba(201,162,77,.18)}
+.field-err{border-color:#B4432E}
+.field-errmsg{font-size:11.5px;color:#B4432E;margin-top:5px}
+.pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:4px 11px;border-radius:99px;display:inline-flex;align-items:center;gap:5px}
+.pill-gold{background:rgba(201,162,77,.15);color:var(--gold-dim)}
+.pill-pine{background:var(--pine-tint);color:var(--pine)}
+.pill-ink{background:var(--ink);color:var(--cream)}
+.pill-outline{border:1px solid var(--doc-border-2);color:var(--doc-text-2)}
+.card{background:var(--doc-surface);border:1px solid var(--doc-border);border-radius:14px;overflow:hidden}
+.card .ph{height:150px;background:linear-gradient(135deg,#1c2438,#0a0e1a);position:relative}
+.card .ph .route{position:absolute;bottom:10px;left:12px;font-family:var(--mono);color:var(--gold-bright);font-size:11px;letter-spacing:.05em}
+.card .body{padding:1.1rem 1.2rem 1.3rem}
+.card .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--doc-muted);margin-bottom:5px}
+.card h4{font-size:1.02rem;font-weight:700;margin:0 0 .4rem}
+.card .price{font-family:var(--mono);font-size:1.05rem;font-weight:600;margin-top:.85rem;padding-top:.85rem;border-top:1px solid var(--doc-border);display:flex;justify-content:space-between;align-items:baseline}
+.card .price small{font-family:var(--sans);font-size:10.5px;color:var(--doc-muted);text-transform:uppercase;letter-spacing:.04em}
+.spec-table{width:100%;border-collapse:collapse;font-size:13px}
+.spec-table th{text-align:left;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--doc-muted);font-weight:500;padding:.5rem .75rem;border-bottom:1px solid var(--doc-border-2)}
+.spec-table td{padding:.65rem .75rem;border-bottom:1px solid var(--doc-border);color:var(--doc-text-2)}
+.spec-table td:first-child{color:var(--doc-text);font-weight:600}
+.elev-row{display:flex;gap:1rem;flex-wrap:wrap}
+.elev-box{width:150px;height:90px;background:var(--doc-surface);border-radius:10px;display:flex;align-items:flex-end;padding:10px;font-family:var(--mono);font-size:10.5px;color:var(--doc-muted)}
+.motion-note{display:flex;gap:1.75rem;flex-wrap:wrap}
+.motion-item{flex:1;min-width:200px;background:var(--doc-surface);border:1px solid var(--doc-border);border-radius:12px;padding:1.1rem 1.25rem}
+.motion-item .k{font-family:var(--mono);font-size:11px;color:var(--gold-dim);text-transform:uppercase;letter-spacing:.06em}
+.motion-item p{font-size:13px;color:var(--doc-text-2);margin:.4rem 0 0}
+.footnote{font-size:12px;color:var(--doc-muted);margin-top:1.75rem;line-height:1.7}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+<div class="eds-root">
+<h2 class="sr-only">Bundelkhand Pride Travels visual identity and design system: color palette, typography, and component library</h2>
+
+<div class="eds-cover">
+  <div class="eds-shell">
+    <div class="eds-eyebrow">Bundelkhand Pride Travels — Visual identity</div>
+    <div class="eds-word">Plans like an <em>engineer.</em><br>Cares like <em>family.</em></div>
+    <p class="eds-tag">The new Bundelkhand Pride Travels tagline, and the design brief in one line. Built on a night-departures palette — deep ink, warm gold, quiet pine — with tabular, ticket-style data everywhere a price or a date appears.</p>
+    <div class="eds-cover-meta">
+      <div>Personality<b>Premium · precise · unhurried</b></div>
+      <div>Reference class<b>Private aviation, not package tourism</b></div>
+      <div>Primary motif<b>The departures board</b></div>
+    </div>
+  </div>
+</div>
+
+<div class="eds-shell">
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">01 — Rationale</div>
+  <h3 class="eds-h2">Why a departures board, not a postcard</h3>
+  <p class="eds-lede">Most travel sites reach for the same gestalt: bright sky photography, a friendly rounded sans, a sunny yellow or coral CTA. That reads as a booking widget, not an operator you'd trust with a family trip or a corporate group. Bundelkhand Pride Travels borrows instead from the world of flight manifests, boarding passes and airport departure boards — instruments that are precise, a little formal, and quietly confident. Ink-navy grounds carry that precision; a single warm gold carries the luxury cue; itinerary days, prices and dates are set in tabular mono, like a ticket stub. The result should feel engineered, not decorated.</p>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">02 — Color</div>
+  <h3 class="eds-h2">Palette</h3>
+  <p class="eds-lede">Six named colors. Ink and paper alternate as the page's "night" and "day" bands — hero, footer and key CTA moments sit on ink; browsing and reading sections sit on paper. Gold is the only accent spent on action; pine is reserved for a single semantic use — adventure/trek category tags — so it never competes with gold for attention.</p>
+  <div class="eds-grid g-6">
+    <div class="swatch"><div class="fill" style="background:#0A0E1A"></div><div class="meta"><div class="name">Ink</div><div class="hex">#0A0E1A</div><div class="use">Hero, footer, nav, dark CTA bands</div></div></div>
+    <div class="swatch"><div class="fill" style="background:#141B2C"></div><div class="meta"><div class="name">Ink raised</div><div class="hex">#141B2C</div><div class="use">Cards & inputs on ink</div></div></div>
+    <div class="swatch"><div class="fill" style="background:#C9A24D"></div><div class="meta"><div class="name">Gold</div><div class="hex">#C9A24D</div><div class="use">Primary CTA, key numerals, active state</div></div></div>
+    <div class="swatch"><div class="fill" style="background:#F6F3EA"></div><div class="meta"><div class="name">Paper</div><div class="hex">#F6F3EA</div><div class="use">Content / listing section ground</div></div></div>
+    <div class="swatch"><div class="fill" style="background:#6E6658"></div><div class="meta"><div class="name">Stone</div><div class="hex">#6E6658</div><div class="use">Secondary text on paper</div></div></div>
+    <div class="swatch"><div class="fill" style="background:#2F5D50"></div><div class="meta"><div class="name">Pine</div><div class="hex">#2F5D50</div><div class="use">Adventure/trek tag only — single semantic use</div></div></div>
+  </div>
+  <p class="footnote">Text-on-color rule: cream (#EDE7D6) on ink, ink (#0A0E1A) on gold or paper — never pure black or pure white, so every surface keeps the same warm bias.</p>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">03 — Typography</div>
+  <h3 class="eds-h2">Three roles, one hierarchy</h3>
+  <p class="eds-lede">A warm italic serif carries emotion at large sizes only — headlines, pull quotes, big stat numbers. A plain system sans runs everything a user reads or operates. A monospace renders anything that is fundamentally a number or a code — prices, dates, itinerary days, route pairs — the ticket-stub motif made literal.</p>
+  <div class="panel" style="padding:0 2rem">
+    <div class="type-row"><div class="type-meta"><b>Display / serif italic</b>72 · weight 700<br>Hero headlines only</div><div class="t-display" style="font-size:44px">Kashmir, unhurried.</div></div>
+    <div class="type-row"><div class="type-meta"><b>Heading / sans</b>28–34 · weight 700<br>Section titles</div><div class="t-ui" style="font-size:28px">Upcoming departures</div></div>
+    <div class="type-row"><div class="type-meta"><b>Body / sans</b>16 · weight 400<br>Paragraph copy</div><div style="font-size:16px;color:var(--doc-text-2);max-width:32em">Five nights across Srinagar, Gulmarg and Pahalgam, with a private houseboat evening on Dal Lake and a dedicated trip captain throughout.</div></div>
+    <div class="type-row"><div class="type-meta"><b>Label / mono</b>11 · uppercase · tracked<br>Eyebrows, tags</div><div class="t-mono" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dim)">Fixed departure · every friday</div></div>
+    <div class="type-row"><div class="type-meta"><b>Data / mono</b>15–22 · tabular<br>Price, date, day count</div><div class="t-mono" style="font-size:20px">₹28,000 <span style="color:var(--doc-muted);font-size:13px">/ couple</span></div></div>
+  </div>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">04 — Buttons</div>
+  <h3 class="eds-h2">Buttons & actions</h3>
+  <p class="eds-lede">One filled gold button per view, maximum — everything else is outline or text. Buttons carry a verb, never "Submit" or "Click here."</p>
+  <div class="panel">
+    <div class="row-wrap" style="margin-bottom:1.4rem">
+      <button class="btn btn-primary">Check availability</button>
+      <button class="btn btn-secondary">View itinerary</button>
+      <button class="btn btn-ghost">Compare packages →</button>
+      <button class="btn btn-primary btn-sm">Reserve seat</button>
+      <button class="btn btn-secondary" disabled>Sold out — Dec batch</button>
+    </div>
+  </div>
+  <div class="panel-dark" style="margin-top:1rem">
+    <div class="row-wrap">
+      <button class="btn btn-primary-dark">Plan my trip</button>
+      <button class="btn btn-secondary-dark">Talk to a travel lead →</button>
+    </div>
+  </div>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">05 — Forms</div>
+  <h3 class="eds-h2">Form components</h3>
+  <p class="eds-lede">Inputs are quiet until focused, then take a thin gold ring — never a jarring color shift. Errors are explained in plain language, never a raw validation code.</p>
+  <div class="panel">
+    <div class="eds-grid g-3">
+      <div><span class="field-label">Full name</span><input class="field" placeholder="Aditi Sharma" /></div>
+      <div><span class="field-label">Travel date</span><input class="field" placeholder="12 Dec 2026" /></div>
+      <div><span class="field-label">Travellers</span><input class="field" placeholder="2 adults" /></div>
+    </div>
+    <div class="eds-grid g-2" style="margin-top:1rem">
+      <div><span class="field-label">WhatsApp number</span><input class="field field-err" placeholder="+91" /><div class="field-errmsg">That doesn't look like a valid number. Try including the country code.</div></div>
+      <div><span class="field-label">Destination</span><select class="field"><option>Kashmir — Srinagar &amp; Gulmarg</option><option>Manali — Volvo package</option><option>Chopta — Tungnath trek</option></select></div>
+    </div>
+  </div>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">06 — Tags & badges</div>
+  <h3 class="eds-h2">Pills</h3>
+  <div class="panel"><div class="row-wrap">
+    <span class="pill pill-gold">Featured</span>
+    <span class="pill pill-pine">Trek · moderate</span>
+    <span class="pill pill-ink">Group departure</span>
+    <span class="pill pill-outline">4N / 5D</span>
+    <span class="pill pill-outline">Family friendly</span>
+  </div></div>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">07 — Cards</div>
+  <h3 class="eds-h2">Package card</h3>
+  <p class="eds-lede">The recurring unit of the whole product. Route code in the image corner does double duty as texture and information — a real IATA-style pairing, not decoration.</p>
+  <div class="eds-grid g-3">
+    <div class="card">
+      <div class="ph"><span class="route">DEL → SXR</span></div>
+      <div class="body"><div class="kicker">Kashmir · Couple</div><h4>Srinagar, Gulmarg &amp; Pahalgam</h4><p style="font-size:13px;color:var(--doc-text-2);margin:0">Houseboat evening on Dal Lake, Gondola at Gulmarg.</p><div class="price">₹28,000<small>from · per couple</small></div></div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(135deg,#25321f,#0a0e1a)"><span class="route">DEL → KUU</span></div>
+      <div class="body"><div class="kicker">Himachal · Group</div><h4>Manali + Kasol, Friday batch</h4><p style="font-size:13px;color:var(--doc-text-2);margin:0">Atal Tunnel, Chalal trek, riverside bonfire.</p><div class="price">₹28,000<small>from · per couple</small></div></div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(135deg,#2f5d50,#0a0e1a)"><span class="route">RSH → TGN</span></div>
+      <div class="body"><div class="kicker">Trek · Moderate</div><h4>Chopta &amp; Tungnath summit</h4><p style="font-size:13px;color:var(--doc-text-2);margin:0">World's highest Shiva temple, Chandrashila sunrise.</p><div class="price">₹6,999<small>from · per person</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">08 — Elevation &amp; radius</div>
+  <h3 class="eds-h2">Shadows and corners</h3>
+  <div class="eds-grid g-4">
+    <div class="elev-box" style="box-shadow:0 1px 2px rgba(23,20,13,.06);border-radius:8px">flat / inputs</div>
+    <div class="elev-box" style="box-shadow:0 2px 8px rgba(23,20,13,.08);border-radius:12px">raised / cards</div>
+    <div class="elev-box" style="box-shadow:0 12px 28px rgba(23,20,13,.14);border-radius:14px">lifted / popovers</div>
+    <div class="elev-box" style="box-shadow:0 24px 48px rgba(23,20,13,.20);border-radius:16px">modal / sheet</div>
+  </div>
+  <p class="footnote">Radius is deliberately restrained and slightly inconsistent by function — buttons and inputs 7–8px (precision), cards 12–14px, photography panels 16px, tags fully pill-shaped. Nothing defaults to a single rounded-lg value.</p>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">09 — Grid &amp; spacing</div>
+  <h3 class="eds-h2">Layout system</h3>
+  <table class="spec-table">
+    <tr><th>Token</th><th>Value</th><th>Use</th></tr>
+    <tr><td>Base unit</td><td>8px</td><td>All spacing is a multiple of 8</td></tr>
+    <tr><td>Container</td><td>1280px max</td><td>Page content width</td></tr>
+    <tr><td>Grid</td><td>12 columns, 24px gutter</td><td>Desktop layout</td></tr>
+    <tr><td>Section rhythm</td><td>112px / 64px</td><td>Vertical padding desktop / mobile</td></tr>
+    <tr><td>Breakpoints</td><td>480 · 768 · 1024 · 1280</td><td>Mobile-first</td></tr>
+  </table>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">10 — Motion</div>
+  <h3 class="eds-h2">Principles</h3>
+  <div class="motion-note">
+    <div class="motion-item"><div class="k">Duration</div><p>180–260ms for hover/press. 400–600ms for scroll-reveal. Nothing longer — this is a booking flow, not a title sequence.</p></div>
+    <div class="motion-item"><div class="k">Easing</div><p>ease-out for anything entering, ease-in for anything leaving. No bounce, no elastic overshoot.</p></div>
+    <div class="motion-item"><div class="k">Scroll reveal</div><p>Section content fades up 12px on first entry into view, once only — never re-triggers on scroll-back.</p></div>
+    <div class="motion-item"><div class="k">Respect for the user</div><p><code>prefers-reduced-motion</code> disables all transform/opacity transitions site-wide, not just the obvious ones.</p></div>
+  </div>
+</section>
+
+<section class="eds-sec">
+  <div class="eds-eyebrow">11 — Iconography</div>
+  <h3 class="eds-h2">Icons</h3>
+  <p class="eds-lede">Single-weight line icons, 1.5px stroke, no fills, no emoji anywhere in the product. Icons illustrate a function (search, calendar, WhatsApp, phone) — they never stand in for a numbered step or a decorative flourish.</p>
+</section>
+
+</div>
+</div>

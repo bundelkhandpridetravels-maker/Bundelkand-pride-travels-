@@ -1,8 +1,18 @@
 # Project Status
 
-**Last updated:** 2026-07-16
-**Current stage:** Phase 1 — Frontend Development
-**Current module:** Module 9 complete — form-first booking system (backend-ready), pickup/drop, Jaisalmer departures from 13 Oct, Framer Motion. Build green (static/SSG), **tsc + ESLint both clean**.
+**Last updated:** 2026-07-22
+**Current stage:** Phase 2 — premium UI/experience pass (Track A) + backend brought forward (pending credentials)
+**Current module:** Phase 2 · A1 (motion foundation) — **complete, deployed to production** (`6e55d9c`). Shared motion tokens (`src/lib/motion.ts`), upgraded `Reveal`, new `Stagger`, opacity-only route transitions (`app/template.tsx`). Build green (33/33 static), tsc + ESLint clean.
+
+## ⚠️ Production action needed by you
+- **`/dashboard/founder` returns 503 in production** — the Basic Auth proxy is live but `FOUNDER_DASHBOARD_PASSWORD` is **not set** in Vercel. Add it in Vercel → Settings → Environment Variables (optionally `FOUNDER_DASHBOARD_USER`), then redeploy. Verified 2026-07-22 against https://www.bundelkhandpridetravels.com.
+
+## Phase 2 decisions locked (2026-07-22)
+- Fixed group departures leave from **Delhi** (existing Jhansi/Jammu data to be migrated). Keep the two Kashmir batches.
+- Backend (Payload CMS + DB) **brought forward** for a real admin dashboard — blocked on your accounts/credentials (`DATABASE_URL` etc.).
+- UI imagery: **gradient art-direction for now**; swap real licensed photos/video later (only 3 real images exist; `public/videos/*` empty).
+- Track A order: A1 motion → A2 primitives → A3 hero (needs media) → A4 mobile → A5 section polish.
+- Still needed from you (business data, do not invent): per-departure Date/Return/Reporting time/Transport/Hotel/Meal plan/Seats/Price/Inclusions/Exclusions; whether Corporate & Honeymoon tour types have real packages; new departures not yet in code (Manali Fri, Chopta Tungnath Deoria Tal, Madhyamaheshwar Trek, Khatu Shyam–Salasar–Jaipur).
 
 ## Open decision — the "Jammu package"
 

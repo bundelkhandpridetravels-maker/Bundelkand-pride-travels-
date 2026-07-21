@@ -2,6 +2,16 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · A1 — motion foundation)
+
+Phase 2 begins: premium UI/experience pass (Track A), starting with the motion foundation. No section redesign yet — this is the shared plumbing every later module inherits.
+
+- **`src/lib/motion.ts`** — single source of truth for easing curves (`EASE_OUT` matching the `bpt-fade-up` CSS keyframe), durations, the shared scroll-in viewport config, and Framer variants (stagger + page transition). Replaces easing/timing constants that were duplicated across components.
+- **`Reveal`** upgraded — now takes `direction` (up/down/left/right/none), `distance` and `duration`, all defaulting from the motion tokens. Existing `<Reveal delay className>` call sites are unchanged (backward compatible).
+- **`Stagger`** (new) — `StaggerGroup`/`StaggerItem` orchestrate a cascade so list/grid rows fade in one after another from a single timeline, replacing the manual `delay={i * 0.05}` pattern.
+- **Route transitions** — new `app/template.tsx` + `PageTransition` play a gentle **opacity-only** crossfade on navigation. Deliberately no transform/filter on this wrapper: it sits above the `position: fixed` Navbar, and a transform/filter ancestor would break the nav's fixed positioning. Reduced-motion renders instantly.
+- **Verified:** `tsc --noEmit` clean, ESLint clean, `next build` green — **33/33 pages** prerender, all routes intact.
+
 ## 2026-07-18 (Module 11 — catalogue complete: all 12 packages have detail pages)
 
 - Added full `PackageDetail` content for the last three: **Manali + Kasol**, **Shimla + Manali** (family-paced), and the **Jim Corbett + Nainital school tour** (with student-safety FAQs, GPS-tracked coach, per-student quad-sharing model).

@@ -2,6 +2,18 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Blueprint v2 + A2 primitives + section scaffolds)
+
+**Governance:** Added the canonical **[Master Business Blueprint v2](docs/BUSINESS_BLUEPRINT.md)** (curated AI-powered travel OS, not a marketplace) and a **[Blueprint-aligned Architecture v2 draft](docs/ARCHITECTURE_V2.md)** (data model, vendor-ranking + hotel-allocation engines, cash-flow/finance model, RBAC extension, revised build order) — design only, no invented business data.
+
+**Reusable UI primitives (A2):** New `src/components/ui/` — `Button` (link/button polymorphic, 4 variants), `Card` (interactive surface), `Badge` (pill/tag), `Eyebrow` (kicker), plus `src/lib/cn.ts`. Consolidates markup previously copy-pasted across the navbar/cards/CTAs. Navbar CTA now uses `Button`.
+
+**Blueprint section scaffolds (design/scaffold only — zero invented content):**
+- New routes: `/corporate-tours`, `/school-college-tours`, `/honeymoon`, `/reviews`, `/b2b` (b2b is `noindex`). Each uses a reusable `PageShell`/`PageHero` + `ScaffoldPage` and shows only the *intended structure* + a loud, greppable **`ScaffoldNotice`** (`data-scaffold`) marking content as pending real data, plus an enquiry CTA.
+- Navbar reorganised with a **Tours** dropdown (Packages, Group departures, Corporate, School & college, Honeymoon) + Reviews; Footer gained a Tours column and B2B link.
+- **`ScaffoldNotice`** is the standard, unmistakable "awaiting real data" marker used everywhere content is pending — nothing invented can pass as live.
+- **Verified:** tsc + ESLint clean; `next build` green — **38/38 pages** prerender (5 new routes static).
+
 ## 2026-07-22 (Phase 2 · A1 — motion foundation)
 
 Phase 2 begins: premium UI/experience pass (Track A), starting with the motion foundation. No section redesign yet — this is the shared plumbing every later module inherits.

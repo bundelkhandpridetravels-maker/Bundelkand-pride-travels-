@@ -7,17 +7,24 @@ const columns = [
       { label: "Packages", href: "/packages" },
       { label: "Group departures", href: "/group-departures" },
       { label: "Destinations", href: "/destinations" },
-      { label: "Himalayan treks", href: "/packages/chopta-tungnath" },
-      { label: "Kashmir", href: "/destinations/kashmir" },
+      { label: "Journal", href: "/journal" },
+    ],
+  },
+  {
+    title: "Tours",
+    items: [
+      { label: "Corporate tours", href: "/corporate-tours" },
+      { label: "School & college", href: "/school-college-tours" },
+      { label: "Honeymoon", href: "/honeymoon" },
+      { label: "Reviews", href: "/reviews" },
     ],
   },
   {
     title: "Company",
     items: [
       { label: "About us", href: "/about" },
-      { label: "Reviews", href: "/#reviews" },
-      { label: "Journal", href: "/journal" },
       { label: "Contact", href: "/contact" },
+      { label: "B2B partners", href: "/b2b" },
     ],
   },
 ];
@@ -26,7 +33,7 @@ export default function Footer() {
   return (
     <footer className="bg-ink-deep text-mist">
       <div className="mx-auto max-w-6xl px-6 py-14 sm:px-10 lg:px-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1.2fr]">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
           <div>
             <div className="flex items-center gap-2.5">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold font-mono text-xs font-bold text-ink">

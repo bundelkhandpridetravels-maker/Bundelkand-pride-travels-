@@ -2,7 +2,11 @@
 
 **Last updated:** 2026-07-22
 **Current stage:** Phase 2 — premium UI/experience pass (Track A) + backend brought forward (pending credentials)
-**Current module:** Phase 2 · A1 (motion foundation) — **complete, deployed to production** (`6e55d9c`). Shared motion tokens (`src/lib/motion.ts`), upgraded `Reveal`, new `Stagger`, opacity-only route transitions (`app/template.tsx`). Build green (33/33 static), tsc + ESLint clean.
+**Current module:** Phase 2 · A2 primitives + blueprint section scaffolds — **complete** (build green, 38/38 static, tsc + ESLint clean). Reusable `ui/` primitives (Button/Card/Badge/Eyebrow), 5 new scaffold routes (corporate-tours, school-college-tours, honeymoon, reviews, b2b) with loud `ScaffoldNotice` placeholders (no invented data), Navbar Tours dropdown + Footer links. A1 motion foundation (`6e55d9c`) deployed earlier.
+
+**Scaffold-only mode (2026-07-22):** Founder directive — build the complete UI/routes/DB-schema/CMS-collections/dashboards/booking-flow/components with clearly-marked placeholders; invent NOTHING (destinations/hotels/itineraries/prices/rules); real data supplied later. Sequencing rule to protect the LIVE site: frontend scaffolds deploy now; **Payload/DB backend stays build-isolated until `DATABASE_URL` is provided** (a half-wired backend would break `next build` and take production down). Canonical docs: `docs/BUSINESS_BLUEPRINT.md`, `docs/ARCHITECTURE_V2.md`.
+
+**Scaffold build queue:** [done] UI primitives · [done] tour-type/section routes · [next] dashboards (Founder/Vendor/CRM/Admin UI shells) · [ ] booking-flow UI expansion · [ ] DB schema + CMS collections (build-isolated) · [ ] apply primitives across existing pages (A5) · [ ] A3 hero + A4 mobile polish.
 
 ## ⚠️ Production action needed by you
 - **`/dashboard/founder` returns 503 in production** — the Basic Auth proxy is live but `FOUNDER_DASHBOARD_PASSWORD` is **not set** in Vercel. Add it in Vercel → Settings → Environment Variables (optionally `FOUNDER_DASHBOARD_USER`), then redeploy. Verified 2026-07-22 against https://www.bundelkhandpridetravels.com.

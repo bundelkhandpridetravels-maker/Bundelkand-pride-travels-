@@ -2,6 +2,18 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Vendor Management Layer)
+
+Supply-side operations on the same pattern as the CRM layer. Isolated, no new deps, no DB, no payments, additive, Hermes-ready; mirrors the payload Vendors/Hotels/Dmcs/TransportProviders schema (no duplicate models).
+
+- **`src/lib/vendor/model.ts`** — `VendorType`, `VerificationStatus`, normalized `VendorRecord`, `VendorVerificationSummary`, `VendorAssignmentProposal`.
+- **`ranking.ts`** — the Vendor Ranking Engine: pure `computeQualityScore()` over configurable weights (reviews/complaints/response/service/pricing/professionalism); returns `null` when data is absent (never fabricates a score).
+- **`assignment.ts`** — Hotel/Vendor allocation: `proposeVendors()` ranks verified, eligible vendors → **proposals only** (human-confirmed via ApprovalQueue, security §12). Feeds the CRM `vendor_assignment` stage.
+- **`vendor-repository.ts`** — `VendorRepository` aggregation seam (verification summary / vendors / assignments) → console stub `live:false`, swaps to Payload/Neon later.
+- **`hermes.ts`** — `buildVendorContext()` on the shared HermesContext contract.
+- **Vendor dashboard wired** — `/dashboard/vendor` renders from the seam: verification summary, **ranking-engine transparency** (factor weights), vendor register with score meters, assignment queue. Shell unchanged.
+- **Verified:** tsc + ESLint clean; `next build` green — all routes unchanged.
+
 ## 2026-07-22 (Phase 2 · CRM & Business Operations Layer — the operational brain)
 
 Turns the CRM dashboard shell into the operational surface that unifies every workflow. Isolated, no new deps, no DB, no payments, additive, Hermes-ready — no duplicate data models (mirrors the stable `src/payload` schema).

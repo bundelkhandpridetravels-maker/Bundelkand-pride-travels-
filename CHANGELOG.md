@@ -2,6 +2,17 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · CRM & Business Operations Layer — the operational brain)
+
+Turns the CRM dashboard shell into the operational surface that unifies every workflow. Isolated, no new deps, no DB, no payments, additive, Hermes-ready — no duplicate data models (mirrors the stable `src/payload` schema).
+
+- **`src/lib/crm/model.ts`** — the single CRM vocabulary: `LeadStage` (mirrors `payload/Leads.stage`), the full **`LifecycleStage`** (Customer→Lead→Quote→Booking→Payment→Vendor→Trip→Review→Repeat→Loyalty→Community→Lifetime), normalized `CrmLead` / `CrmActivity` / `CrmPipelineSummary`.
+- **`src/lib/crm/adapters.ts`** — integration spine: pure mappers `leadFromEnquiry`, `leadFromBooking`, `activityFromBooking`, `activityFromQuote` fold the existing enquiry/booking/quote seams into one pipeline. The DB ingestion pipeline will reuse these verbatim.
+- **`src/lib/crm/crm-repository.ts`** — `CrmRepository` aggregation seam (pipeline summary / leads / activities) → `ConsoleCrmRepository` reports `live:false` today, swaps to Payload/Neon later with no UI change.
+- **`src/lib/crm/hermes.ts`** — Hermes contract (`HermesContext`, `buildLeadContext`, `HermesSuggestion`, `HERMES_ENABLED=false`) so every CRM record is AI-consumable later; actionable steps route through the ApprovalQueue (security §12).
+- **CRM dashboard wired** — `/dashboard/crm` now renders from the seam: reusable `PipelineBoard` (stage counts), the full lifecycle strip, unified leads table + activity feed. The dashboard shell/layout is unchanged (additive content only).
+- **Verified:** tsc + ESLint clean; `next build` green — `/dashboard/crm` static, all routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Quote Generation System)
 
 Funnel-leading, reusable Quote model — Quote → Booking → Payment → Vendor confirmation → Trip → Review. Isolated, no new dependencies, no DB, no payment gateway, build-safe, additive only.

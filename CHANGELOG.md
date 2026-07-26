@@ -2,6 +2,15 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Email Workflow Architecture)
+
+Transactional email layer designed and ready — **no email dependency added** (console stub → Resend later). Isolated, additive, build-safe, Hermes-draftable.
+
+- **`src/lib/email/`** — `model.ts` (single template registry: `EmailTemplateId` + trigger/audience metadata; `EmailMessage`/`EmailSendResult`), `templates.ts` (pure renderers from the existing `EnquiryInput`/`QuoteDocument`/`BookingRecord` models + branding; plain-text, no `react-email` dep, nothing invented), `email-provider.ts` (`EmailProvider` seam → `ConsoleEmailProvider`, `delivered:false`), `workflow.ts` (orchestrators: enquiry-received, quote-sent, booking-payment-pending, review-request), `hermes.ts` (`draftEmail()` seam so Hermes can draft replies — human reviews & sends, never autonomous).
+- **Not wired into the completed enquiry/booking routes** (stable) — the orchestrators are the seam a route/CRM calls when email goes live; swapping the provider to Resend needs no caller change.
+- **Admin surface:** additive "Email workflows" panel lists the registry + current provider (console). Dashboard shell untouched.
+- **Verified:** tsc + ESLint clean; `next build` green — all routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Marketing & Partnership Dashboard)
 
 Marketing/partnerships on the established pattern; partnerships mirror the payload Influencers/TripCaptains schema (no duplicate models). Isolated, additive, build-safe, Hermes-ready.

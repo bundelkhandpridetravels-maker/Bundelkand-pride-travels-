@@ -1,4 +1,6 @@
 import { Panel, PendingMetric, EmptyState, ScaffoldNote, DataTable } from "@/components/dashboard";
+import { EMAIL_TEMPLATES, EMAIL_TEMPLATE_META } from "@/lib/email/model";
+import { getEmailProvider } from "@/lib/email/email-provider";
 
 export const metadata = { title: "Admin" };
 
@@ -65,6 +67,31 @@ export default function AdminDashboard() {
           </ul>
         </Panel>
       </div>
+
+      {/* Email workflows */}
+      <Panel eyebrow="Automation" title="Email workflows">
+        <p className="mb-3 text-[12px] text-white/45">
+          Transactional templates (`src/lib/email`). Provider:{" "}
+          <span className="font-mono text-white/70">{getEmailProvider().name}</span> — logs only; swap to
+          Resend to deliver.
+        </p>
+        <ul className="space-y-2">
+          {EMAIL_TEMPLATES.map((t) => (
+            <li
+              key={t}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/8 bg-white/[0.02] px-4 py-2.5"
+            >
+              <span className="text-[12.5px] text-white/75">{EMAIL_TEMPLATE_META[t].label}</span>
+              <span className="flex items-center gap-3">
+                <span className="text-[11px] text-white/40">{EMAIL_TEMPLATE_META[t].trigger}</span>
+                <span className="rounded-full border border-white/12 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-white/40">
+                  {EMAIL_TEMPLATE_META[t].audience}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Panel>
     </div>
   );
 }

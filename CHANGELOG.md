@@ -2,6 +2,18 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Internal console — dashboard UI shells)
+
+Shell-only build of the internal console per the founder vision (scalable structure, no heavy backend, no invented data).
+
+- **Shared console shell** — new `dashboard/(console)/` route group with a `layout.tsx` that wraps its pages in `DashboardShell` (sidebar + topbar, mobile drawer, active-link highlight). The completed standalone **Founder dashboard stays outside the group and is untouched**.
+- **Nav as data** — `src/lib/dashboard/nav.ts` is the single source (active units + `planned` future units: Trip Captains, Analytics, Hermes AI). Role-based filtering can hang off this later without touching the shell.
+- **Reusable dashboard components** — `src/components/dashboard/`: `DashboardShell`, `EmptyState`, `LoadingState`, `ScaffoldNote`, `DataTable`, plus an `index.ts` barrel that re-exports the existing founder primitives (Panel/Metric/PendingMetric/StatusPill/…) so nothing was rewritten.
+- **New surfaces (scaffold, empty/pending states only):** `/dashboard` (console hub), `/dashboard/vendor`, `/dashboard/crm`, `/dashboard/admin`. Every metric is `PendingMetric`/`EmptyState` with a stated reason — zero invented figures. Group-level `loading.tsx` provides skeleton loading states.
+- **Security:** proxy Basic Auth matcher extended to `["/dashboard", "/dashboard/:path*"]` so the new hub is explicitly gated (additive).
+- **Verified:** tsc + ESLint clean; `next build` green — new console routes prerender static, Founder route unchanged. (Live pages return 503 until `FOUNDER_DASHBOARD_PASSWORD` is set in Vercel — same gate as Founder.)
+- **Docs:** added `docs/VISION.md` (founder 10-year vision → architectural implications).
+
 ## 2026-07-22 (Phase 2 · Blueprint v2 + A2 primitives + section scaffolds)
 
 **Governance:** Added the canonical **[Master Business Blueprint v2](docs/BUSINESS_BLUEPRINT.md)** (curated AI-powered travel OS, not a marketplace) and a **[Blueprint-aligned Architecture v2 draft](docs/ARCHITECTURE_V2.md)** (data model, vendor-ranking + hotel-allocation engines, cash-flow/finance model, RBAC extension, revised build order) — design only, no invented business data.

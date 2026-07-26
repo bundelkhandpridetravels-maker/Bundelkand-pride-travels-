@@ -78,5 +78,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  // Match the console hub (/dashboard) and everything nested under it. Both
+  // entries are listed explicitly so the exact /dashboard route is always gated.
+  matcher: ["/dashboard", "/dashboard/:path*"],
 };

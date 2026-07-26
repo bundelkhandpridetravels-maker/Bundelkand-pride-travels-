@@ -2,6 +2,16 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Build-isolated backend schema — 19 Payload collections)
+
+Database architecture designed before wiring — production-grade, reviewable, and **fully build-safe** (no `payload` dependency, no DB connection, no `DATABASE_URL`, not imported by any page/route → never in the production bundle).
+
+- **Decision:** did **not** install `payload` (Payload 3 targets Next 15; this repo is Next 16 on an auto-deploying `main` — installing risks breaking the live build). Instead `src/payload/types.ts` mirrors Payload's `CollectionConfig` API so migration later is a mechanical import swap.
+- **Foundation:** `types.ts` (typed `CollectionSlug` union → compile-time-checked relationships; `Role`, `AdminGroup`, `Field`, `Access`), `access.ts` (reusable RBAC: `hasRole`/`isStaff`/`isAdminOrSelf`/`vendorScoped`/`requiresHumanApproval` — financial mutations gated per security §12), `fields/common.ts` (reusable models: money/contact/address/seo/status/slug/aiAssist/tags).
+- **19 collections** (`src/payload/collections/`): Users, Customers, Leads, CrmActivities, Vendors, Hotels, Dmcs, TransportProviders, Destinations, Packages, Itineraries, Bookings, Payments, Reviews, Influencers, TripCaptains, Documents, Media, Contracts. Designed for: multi-country destination-scoping, category-based hotels (no exact-hotel guarantee), vendor trust/score separated from supply, cash-flow + payout-hold fields, polymorphic Documents/Contracts, and advisory `ai.*` blocks so Hermes AI can enrich records without schema changes.
+- **`src/payload/schema.ts`** — the single object a future `payload.config.ts` consumes, plus `validateSchema()` (no duplicate slugs; all `relationTo` targets exist). `src/payload/README.md` documents isolation + the exact go-live steps.
+- **Verified:** tsc + ESLint clean (relationTo validity is compile-checked); `next build` green — routes unchanged (42), no `payload` in the bundle.
+
 ## 2026-07-22 (Phase 2 · Internal console — dashboard UI shells)
 
 Shell-only build of the internal console per the founder vision (scalable structure, no heavy backend, no invented data).

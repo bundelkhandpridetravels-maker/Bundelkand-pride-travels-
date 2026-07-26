@@ -49,6 +49,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Marketing",
+    href: "/dashboard/marketing",
+    icon: "chart",
+    description: "Campaigns, channels and creator / Trip-Captain partnerships.",
+    status: "scaffold",
+  },
+  {
     label: "Admin",
     href: "/dashboard/admin",
     icon: "shield",

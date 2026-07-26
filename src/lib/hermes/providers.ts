@@ -4,6 +4,7 @@ import { buildLeadContext } from "@/lib/crm/hermes";
 import { getCrmRepository } from "@/lib/crm/crm-repository";
 import { buildVendorContext } from "@/lib/vendor/hermes";
 import { getVendorRepository } from "@/lib/vendor/vendor-repository";
+import { getMarketingRepository } from "@/lib/marketing/marketing-repository";
 import type { HermesContextProvider, HermesInsight, HermesModule } from "@/lib/hermes/contract";
 
 /**
@@ -39,8 +40,25 @@ const vendorHermesProvider: HermesContextProvider = {
   },
 };
 
+const marketingHermesProvider: HermesContextProvider = {
+  module: "marketing",
+  async getContexts() {
+    // Wraps the marketing repository; partner/campaign contexts land here once
+    // the store is live. Empty today (nothing persisted) — never fabricated.
+    await getMarketingRepository().listPartners();
+    return [];
+  },
+  async getInsights(): Promise<HermesInsight[]> {
+    return [];
+  },
+};
+
 /** Registry of active providers. Future modules append here. */
-export const hermesProviders: HermesContextProvider[] = [crmHermesProvider, vendorHermesProvider];
+export const hermesProviders: HermesContextProvider[] = [
+  crmHermesProvider,
+  vendorHermesProvider,
+  marketingHermesProvider,
+];
 
 export function getHermesProvider(module: HermesModule): HermesContextProvider | undefined {
   return hermesProviders.find((p) => p.module === module);

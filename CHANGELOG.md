@@ -2,6 +2,15 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Marketing & Partnership Dashboard)
+
+Marketing/partnerships on the established pattern; partnerships mirror the payload Influencers/TripCaptains schema (no duplicate models). Isolated, additive, build-safe, Hermes-ready.
+
+- **`src/lib/marketing/`** — `model.ts` (channels, `CampaignRecord`, `PartnerRecord` for influencer/trip-captain, `MarketingSummary`) + `marketing-repository.ts` (`MarketingRepository` seam, console stub `live:false`). Attribution ties to CRM leads/bookings — never fabricated metrics.
+- **Hermes plug-in realized** — registered a `marketingHermesProvider` into the existing `hermes/providers.ts` registry, wrapping the marketing repository. First proof that a new module joins Hermes by adding one provider, contract unchanged.
+- **`/dashboard/marketing`** — campaigns, channel breakdown, creator/Trip-Captain partnerships, and a `HermesPanel`. One additive `nav.ts` entry (data only); dashboard shell/architecture untouched.
+- **Verified:** tsc + ESLint clean; `next build` green — `/dashboard/marketing` static, all other routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Hermes AI Integration Layer)
 
 The one shared operational-intelligence layer — not a chatbot. Consumes context from every module through a single contract and surfaces insights to the dashboards. Additive, build-safe, `HERMES_ENABLED=false`; no duplicate models/logic/UI.

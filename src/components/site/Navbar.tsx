@@ -15,6 +15,7 @@ const tourLinks = [
 
 const mainLinks = [
   { label: "Destinations", href: "/destinations" },
+  { label: "Book", href: "/book" },
   { label: "Reviews", href: "/reviews" },
   { label: "Journal", href: "/journal" },
   { label: "About", href: "/about" },

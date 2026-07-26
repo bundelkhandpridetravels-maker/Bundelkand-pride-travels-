@@ -2,6 +2,17 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Booking Flow UI + Payment-Pending state architecture)
+
+Guided online booking journey — built so real bookings can begin the moment the payment gateway is live, with minimal extra work. Payments intentionally postponed (GST/merchant verification in progress); nothing payment-dependent was built.
+
+- **Isolated, nothing existing changed.** The quick-enquiry path (`enquiry.ts`, `/api/enquiries`, `BookingModal`) is untouched and remains the quick-enquiry flow. The guided journey is a new parallel module.
+- **Booking state machine** — `src/lib/booking/status.ts`: `BookingStatus` mirrors the Payload `bookings` collection, with **`payment_pending` as a first-class state** every online booking lands in today. A `PAYMENTS_ENABLED = false` flag gates the future pay step — flipping it (plus a repository swap) is the ONLY change needed to connect payments, with no journey redesign.
+- **New isolated pipeline** (mirrors the proven enquiry pattern): `booking.ts` (Zod schema + `submitBooking`), `booking-repository.ts` (`BookingRepository` → `ConsoleBookingRepository`, stamps a `BPT-XXXXXX` reference + `payment_pending` status), `quote.ts` (indicative quote from existing `priceFrom` only — **GST shown as a pending line**, 0 until registration; no invented pricing), and `/api/bookings` route.
+- **`/book` journey UI** — 3-step guided flow (Trip → Details → Review+indicative quote) ending in a **Payment-Pending confirmation** with reference and next steps. `?package=<slug>` prefills. Uses the shared `ui/` primitives; client-side validation + server Zod validation.
+- **Additive entry points only:** "Book" in the navbar, "Book online" in the footer. No existing control's behaviour changed.
+- **Verified:** tsc + ESLint clean; `next build` green — `/book` + `/api/bookings` added (dynamic), all other routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Build-isolated backend schema — 19 Payload collections)
 
 Database architecture designed before wiring — production-grade, reviewable, and **fully build-safe** (no `payload` dependency, no DB connection, no `DATABASE_URL`, not imported by any page/route → never in the production bundle).

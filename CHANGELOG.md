@@ -2,6 +2,16 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Hermes AI Integration Layer)
+
+The one shared operational-intelligence layer — not a chatbot. Consumes context from every module through a single contract and surfaces insights to the dashboards. Additive, build-safe, `HERMES_ENABLED=false`; no duplicate models/logic/UI.
+
+- **`src/lib/hermes/contract.ts`** — the single front door. Re-exports the base contract (`HermesContext`/`HermesSuggestion`/`HERMES_ENABLED`) from its existing definition (no duplicate), and adds the platform vocabulary: `HermesModule` (crm/vendor/booking/quote/customer/dashboard/**marketing/finance/operations**), `HermesInsight`, and the common **`HermesContextProvider`** interface every module implements.
+- **`providers.ts`** — concrete providers that REUSE each module's existing repository + context builder (`getCrmRepository`+`buildLeadContext`, `getVendorRepository`+`buildVendorContext`). A registry lets future modules plug in with one provider — no new AI contract per module.
+- **`insights.ts`** — `getHermesInsights(module?)`, the single call dashboards make; `{enabled:false}` until a model is wired.
+- **Reusable `HermesPanel`** (`src/components/dashboard`) — one panel rendering insights with a "learning" state; **wired additively into the CRM and Vendor dashboards** (Founder standalone left untouched). Critical actions are marked "needs approval" — never auto-run (security §12).
+- **Verified:** tsc + ESLint clean; `next build` green — all routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Vendor Management Layer)
 
 Supply-side operations on the same pattern as the CRM layer. Isolated, no new deps, no DB, no payments, additive, Hermes-ready; mirrors the payload Vendors/Hotels/Dmcs/TransportProviders schema (no duplicate models).

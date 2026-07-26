@@ -4,8 +4,10 @@ import {
   EmptyState,
   ScaffoldNote,
   ProgressBar,
+  HermesPanel,
 } from "@/components/dashboard";
 import { getVendorRepository } from "@/lib/vendor/vendor-repository";
+import { getHermesInsights } from "@/lib/hermes";
 import {
   VERIFICATION_STATUSES,
   VERIFICATION_LABELS,
@@ -31,10 +33,11 @@ const WEIGHT_LABELS: Record<keyof typeof RANKING_WEIGHTS, string> = {
  */
 export default async function VendorDashboard() {
   const vendors = getVendorRepository();
-  const [summary, list, assignments] = await Promise.all([
+  const [summary, list, assignments, hermes] = await Promise.all([
     vendors.getVerificationSummary(),
     vendors.listVendors(),
     vendors.listAssignments(),
+    getHermesInsights("vendor"),
   ]);
 
   return (
@@ -111,6 +114,9 @@ export default async function VendorDashboard() {
           emptyHint="Verified hotels, DMCs, transport, guides and activity partners will appear here."
         />
       </Panel>
+
+      {/* Hermes recommendations */}
+      <HermesPanel result={hermes} title="Vendor recommendations" />
 
       {/* Assignment queue */}
       <Panel eyebrow="Operations" title="Assignment queue">

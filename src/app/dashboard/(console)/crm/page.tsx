@@ -4,8 +4,10 @@ import {
   ScaffoldNote,
   DataTable,
   EmptyState,
+  HermesPanel,
 } from "@/components/dashboard";
 import { getCrmRepository } from "@/lib/crm/crm-repository";
+import { getHermesInsights } from "@/lib/hermes";
 import {
   LEAD_STAGES,
   LIFECYCLE_STAGES,
@@ -22,10 +24,11 @@ export const metadata = { title: "CRM" };
  */
 export default async function CrmDashboard() {
   const crm = getCrmRepository();
-  const [summary, leads, activities] = await Promise.all([
+  const [summary, leads, activities, hermes] = await Promise.all([
     crm.getPipelineSummary(),
     crm.listLeads(),
     crm.listActivities(),
+    getHermesInsights("crm"),
   ]);
 
   return (
@@ -40,6 +43,9 @@ export default async function CrmDashboard() {
       <Panel eyebrow="Pipeline" title="Leads by stage">
         <PipelineBoard counts={summary.counts} stages={[...LEAD_STAGES]} live={summary.live} />
       </Panel>
+
+      {/* Hermes suggestions */}
+      <HermesPanel result={hermes} title="Hermes suggestions" />
 
       {/* Full lifecycle — the brain the CRM is built around */}
       <Panel eyebrow="Lifecycle" title="Customer journey the CRM orchestrates">

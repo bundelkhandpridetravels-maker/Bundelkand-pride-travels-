@@ -17,3 +17,4 @@ export { EmptyState, LoadingState, ScaffoldNote } from "./States";
 export { default as DataTable, type Column } from "./DataTable";
 export { default as DashboardShell } from "./DashboardShell";
 export { default as PipelineBoard } from "./PipelineBoard";
+export { default as HermesPanel } from "./HermesPanel";

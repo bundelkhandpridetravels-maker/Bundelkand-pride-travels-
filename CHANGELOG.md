@@ -2,6 +2,20 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Document Management & Upload Architecture)
+
+Enterprise document layer — the single document architecture for every module. Provider-driven, storage-agnostic; **no storage/DB/upload dependency**. Isolated, additive, build-safe, mirrors `payload/Documents`.
+
+- **`src/lib/documents/model.ts`** — one model: `DocumentKind` (31 namespaced customer/vendor/booking types), `DocumentOwnerType`, `DocumentVisibility` (8), `DocumentStatus` (6), `DocumentMetadata`, `DocumentRecord`, `DocumentUploadResult`, `DocumentProvider` interface + derivations (group/owner/confidential/default-visibility/label).
+- **`validation.ts`** — allowed MIME/extensions, 10 MB cap, image/PDF/confidential validators, safe filename normalization, duplicate-hash detection.
+- **`provider.ts`** — `ConsoleUploadProvider` behind `DocumentProvider` (`stored:false`); seam for R2/S3/GCS/Azure — no dependency added.
+- **`metadata.ts`** — builds full metadata incl. `node:crypto` checksum + deterministic stored path; no I/O.
+- **`permissions.ts`** — visibility→role policy + owner-scoped `canViewDocument`, future-ready RBAC.
+- **`workflow.ts`** — high-level `uploadPassport/uploadInvoice/uploadAgreement/uploadInsurance/…` calling ONLY the provider interface.
+- **`hermes.ts`** — `DocumentSummary`/`Review`/`Extraction`/`Reminder` seams (advisory, human-verified).
+- **Admin surface:** additive `DocumentsAdminSection` — supported types, provider + status, validation rules, lifecycle. Nothing uploads.
+- **Verified:** tsc + ESLint clean; `next build` green — all routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Email Workflow Architecture)
 
 Transactional email layer designed and ready — **no email dependency added** (console stub → Resend later). Isolated, additive, build-safe, Hermes-draftable.

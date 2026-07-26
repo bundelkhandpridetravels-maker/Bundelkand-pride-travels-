@@ -1,4 +1,5 @@
 import { Panel, PendingMetric, EmptyState, ScaffoldNote, DataTable } from "@/components/dashboard";
+import DocumentsAdminSection from "@/components/dashboard/DocumentsAdminSection";
 import { EMAIL_TEMPLATES, EMAIL_TEMPLATE_META } from "@/lib/email/model";
 import { getEmailProvider } from "@/lib/email/email-provider";
 
@@ -92,6 +93,9 @@ export default function AdminDashboard() {
           ))}
         </ul>
       </Panel>
+
+      {/* Document Management System */}
+      <DocumentsAdminSection />
     </div>
   );
 }

@@ -2,6 +2,16 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Quote Generation System)
+
+Funnel-leading, reusable Quote model — Quote → Booking → Payment → Vendor confirmation → Trip → Review. Isolated, no new dependencies, no DB, no payment gateway, build-safe, additive only.
+
+- **`src/lib/quote/`** — `quote.ts` (`QuoteDocument` model with every required field; `buildQuoteDocument()` composed from real package data + branding; **stable hash-based `QT-XXXXXX` reference** needing no DB; Zod URL (de)serialization), `policy.ts` (single-source business rules — **`GST_STATUS = "GST to be applied after registration"`**, cancellation summary + terms referencing /terms-conditions; no invented values), `share.ts` (WhatsApp/email/link builders). Reuses the existing `booking/quote.ts` price calculator — no duplication.
+- **Reusable `QuoteDocumentView`** (`src/components/quote/`) — one responsive, print-friendly branded quote document; reused by `/quote` now and PDF/CRM later.
+- **`/quote` route** — three delivery methods: **View** (page), **Share via WhatsApp/Email** (real deep links to a stable shareable URL), **Download PDF** (clearly "soon" — no PDF dependency added). **"Accept & book"** → `/book?package=…` (accept→booking seam; full customer/date carry-over is the CRM-connected path — completed booking code left untouched). No-package state lets the user pick a package.
+- **Privacy:** no customer PII in shareable URLs (model supports `customerName`; named quotes flow from the CRM later). Additive footer link only.
+- **Verified:** tsc + ESLint clean; `next build` green — `/quote` added, all other routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Customer Journey — booking status tracking)
 
 - **Reusable `BookingStatusTimeline`** — renders the canonical journey (quote requested → payment pending → confirmed → completed) and highlights the current stage. Reused on the booking confirmation, the tracking page, and later the dashboards.

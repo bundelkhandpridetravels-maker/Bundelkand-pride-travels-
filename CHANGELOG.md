@@ -2,6 +2,14 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Customer Journey — booking status tracking)
+
+- **Reusable `BookingStatusTimeline`** — renders the canonical journey (quote requested → payment pending → confirmed → completed) and highlights the current stage. Reused on the booking confirmation, the tracking page, and later the dashboards.
+- **`/track` page** — customers look up a booking by reference (`BPT-XXXXXX`) + phone, wired through an **isolated lookup seam** (`lookup.ts` + `booking-lookup-repository.ts` + `/api/bookings/lookup`). No store is connected yet, so it honestly returns `pending_backend` ("tracking is being connected" + WhatsApp), and returns the real status the moment the backend lands — no UI change (`{live:false}` → `{live:true, hit}` in the repo).
+- **Confirmation enriched** — the booking confirmation now shows the timeline (payment_pending) + a "Track my booking" action.
+- **Additive links only:** "Track booking" in the footer. No existing behaviour changed.
+- **Verified:** tsc + ESLint clean; `next build` green — `/track` (static) + `/api/bookings/lookup` (dynamic) added, all other routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Booking Flow UI + Payment-Pending state architecture)
 
 Guided online booking journey — built so real bookings can begin the moment the payment gateway is live, with minimal extra work. Payments intentionally postponed (GST/merchant verification in progress); nothing payment-dependent was built.

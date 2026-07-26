@@ -11,6 +11,7 @@ import Badge from "@/components/ui/Badge";
 import Eyebrow from "@/components/ui/Eyebrow";
 import { buildQuote } from "@/lib/booking/quote";
 import { PAYMENTS_ENABLED } from "@/lib/booking/status";
+import BookingStatusTimeline from "@/components/booking/BookingStatusTimeline";
 import {
   bookingRequestSchema,
   submitBooking,
@@ -209,11 +210,16 @@ export default function BookingJourney({
           </p>
         </div>
 
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <BookingStatusTimeline status="payment_pending" className="mx-auto mt-7 max-w-md" />
+
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Button href={`https://wa.me/${WHATSAPP}?text=${waText}`} variant="primary">
             Continue on WhatsApp
           </Button>
-          <Button href="/packages" variant="secondary">
+          <Button href="/track" variant="secondary">
+            Track my booking
+          </Button>
+          <Button href="/packages" variant="ghost">
             Browse more trips
           </Button>
         </div>

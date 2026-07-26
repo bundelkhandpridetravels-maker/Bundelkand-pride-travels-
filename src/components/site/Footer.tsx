@@ -5,6 +5,7 @@ const columns = [
     title: "Explore",
     items: [
       { label: "Book online", href: "/book" },
+      { label: "Track booking", href: "/track" },
       { label: "Packages", href: "/packages" },
       { label: "Group departures", href: "/group-departures" },
       { label: "Destinations", href: "/destinations" },

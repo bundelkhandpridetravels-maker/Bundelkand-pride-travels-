@@ -56,6 +56,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Vendor Onboarding",
+    href: "/dashboard/vendor-onboarding",
+    icon: "truck",
+    description: "Staff-managed supplier onboarding — capture, verify, contract, activate.",
+    status: "scaffold",
+  },
+  {
     label: "Vendor Import",
     href: "/dashboard/vendor-import",
     icon: "grid",

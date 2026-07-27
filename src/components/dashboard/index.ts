@@ -18,3 +18,4 @@ export { default as DataTable, type Column } from "./DataTable";
 export { default as DashboardShell } from "./DashboardShell";
 export { default as PipelineBoard } from "./PipelineBoard";
 export { default as HermesPanel } from "./HermesPanel";
+export { default as VendorOnboardingForm } from "./VendorOnboardingForm";

@@ -20,6 +20,7 @@ const columns = [
       { label: "School & college", href: "/school-college-tours" },
       { label: "Honeymoon", href: "/honeymoon" },
       { label: "Reviews", href: "/reviews" },
+      { label: "Write a review", href: "/reviews/submit" },
     ],
   },
   {

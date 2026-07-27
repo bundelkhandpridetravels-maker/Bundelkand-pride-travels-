@@ -2,6 +2,16 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-28 (Phase 2 · Review Collection Flow)
+
+Trust engine — collect, moderate and (later) display verified reviews. Isolated, additive, build-safe; mirrors `payload/Reviews`, reuses the email `review_request` template and the CRM "review" lifecycle stage. No DB, provider-based.
+
+- **`src/lib/reviews/`** — `model.ts` (`ReviewRecord`, moderation statuses, sentiment, `ReviewSummary`), `submission.ts` (Zod schema + client `submitReview`), `review-repository.ts` (`ReviewRepository` seam → console stub `live:false`; submissions start **pending**), `moderation.ts` (pure status transitions, no auto-publish), `google.ts` (Google-review handoff — **null until a real Place ID is configured**, no invented link), `hermes.ts` (sentiment seam).
+- **`/api/reviews`** POST route (validate → repository).
+- **Reusable UI** — `ReviewStars` / `ReviewCard` / `ReviewList` (display, ready for the reviews/package pages) + `ReviewForm` (client) at additive route **`/reviews/submit`** (`?package=`/`?ref=` prefill; thank-you + conditional Google handoff). The existing `/reviews` scaffold is untouched.
+- **CRM dashboard** — additive Reviews moderation summary panel (total/average/pending/published). Footer "Write a review" link.
+- **Verified:** tsc + ESLint clean; `next build` green — `/reviews/submit` + `/api/reviews` added, all other routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Platform Validation Sprint — Vendor Import & Validation)
 
 Prepares the platform to import real vendor data (Gmail, business cards, rate sheets, brochures, contracts) — provider-based, no external service connected. Isolated, additive, build-safe; reuses the Vendor model (candidates wrap `Partial<VendorRecord>` — no duplicate model).

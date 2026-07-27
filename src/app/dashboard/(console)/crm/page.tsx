@@ -7,6 +7,7 @@ import {
   HermesPanel,
 } from "@/components/dashboard";
 import { getCrmRepository } from "@/lib/crm/crm-repository";
+import { getReviewRepository } from "@/lib/reviews/review-repository";
 import { getHermesInsights } from "@/lib/hermes";
 import {
   LEAD_STAGES,
@@ -24,11 +25,12 @@ export const metadata = { title: "CRM" };
  */
 export default async function CrmDashboard() {
   const crm = getCrmRepository();
-  const [summary, leads, activities, hermes] = await Promise.all([
+  const [summary, leads, activities, hermes, reviews] = await Promise.all([
     crm.getPipelineSummary(),
     crm.listLeads(),
     crm.listActivities(),
     getHermesInsights("crm"),
+    getReviewRepository().getSummary(),
   ]);
 
   return (
@@ -104,6 +106,26 @@ export default async function CrmDashboard() {
             hint="Every enquiry, quote, booking, call and note flows into one timeline here."
           />
         )}
+      </Panel>
+
+      {/* Reviews (lifecycle: review) */}
+      <Panel eyebrow="Reviews" title="Review collection & moderation">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            { label: "Total", value: reviews.live ? reviews.total : "—" },
+            { label: "Average", value: reviews.live ? reviews.average.toFixed(1) : "—" },
+            { label: "Pending", value: reviews.live ? reviews.pending : "—" },
+            { label: "Published", value: reviews.live ? reviews.published : "—" },
+          ].map((m) => (
+            <div key={m.label} className="rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3.5">
+              <p className="font-mono text-[9.5px] uppercase tracking-[0.12em] text-white/40">{m.label}</p>
+              <p className="mt-1.5 font-mono text-2xl font-semibold tabular-nums text-white">{m.value}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-[11.5px] text-white/40">
+          Submissions land pending; a human moderates before publish. Public form: /reviews/submit.
+        </p>
       </Panel>
     </div>
   );

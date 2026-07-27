@@ -12,7 +12,11 @@
 
 **Reviews layer (`src/lib/reviews`):** collection→moderation→publish. Submissions (`/api/reviews`, `/reviews/submit`) start `pending`; human moderates (no auto-publish). Google handoff (`google.ts`) is null until a real Place ID is supplied — no invented link. Reusable display components ready for the `/reviews` + package pages once the backend serves published reviews. Console stub only — no DB.
 
-**Payment-independent priorities 1–10 now COMPLETE.** Every operating layer built additively, isolated, provider-based, Hermes-ready, DB-/payment-ready by wiring only. Remaining before real go-live (need founder creds): set `FOUNDER_DASHBOARD_PASSWORD` (console 503), provide `DATABASE_URL` + accounts (Neon/R2/Resend/Razorpay/Gmail/Google Place ID) to swap console stubs for real providers.
+**Payment-independent priorities 1–10 COMPLETE.** Every operating layer built additively, isolated, provider-based, Hermes-ready, DB-/payment-ready by wiring only.
+
+**Phase 3 — Platform Integration & Go-Live Prep (done):** `src/lib/platform/` (registry/health/lifecycle/readiness — REAL introspection of every module's repo/provider/env, no fake data); founder `/dashboard/validation` (module/repo/provider/credential/integration readiness) + `/dashboard/operations` (aggregates existing repositories, no redesign); `docs/GO_LIVE_READINESS.md`. Integration additions: `vendor-import/conflict.ts` (conflict resolution) + `reviews/integration.ts` (reviews↔CRM/Hermes/email/Google/booking-completion via existing seams). CRM lifecycle chain mapped to existing adapters.
+
+**Go-live gated only on founder creds/data:** set `FOUNDER_DASHBOARD_PASSWORD` (console 503) → provide `DATABASE_URL` + Payload wiring (all `*Repository` stubs go live at once) → implement providers as accounts arrive (Resend/R2/Gmail/Razorpay) → load business data (vendors/departures/hotels/Google Place ID/GST/media) → enable Hermes. See `/dashboard/validation` + `docs/GO_LIVE_READINESS.md`.
 
 **Vendor import layer (`src/lib/vendor-import`):** provider-based ingestion pipeline (fetch→map→validate→dedupe→score). NO Gmail/OCR/PDF/Payload/Neon/R2 connected — `ImportSourceProvider` manual stub only; Gmail/business-card/rate-sheet/brochure/contract/email-sync are drop-in providers. Candidates wrap `Partial<VendorRecord>` (reuse, no duplicate). Dedupe runs against the existing `VendorRepository`. `/dashboard/vendor-import` (founder, Basic-Auth-gated) shows status/duplicates/missing-fields/validation/readiness.
 

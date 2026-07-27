@@ -2,6 +2,21 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-28 (Phase 3 · Platform Integration & Go-Live Preparation)
+
+Connects the locked architecture together — integration/aggregation layers only, no new isolated business modules. Additive, provider-based, repository-driven, Payload-/Hermes-compatible, no duplicate models, no external providers connected.
+
+**Milestone A — Platform Integration layer + Founder dashboards**
+- **`src/lib/platform/`** — `registry.ts` (real introspection: every module's repository `checkLive`, provider, required env), `health.ts` (`getPlatformHealth` → operational/provider-pending/credential-pending from live flags + env presence, values never read), `lifecycle.ts` (the CRM integration map Enquiry→…→Hermes, expressed via the EXISTING adapters/seams), `readiness.ts` (`getGoLiveReadiness` → Architecture Complete / Provider Pending / Credential Pending / Business Pending).
+- **`/dashboard/validation`** (founder) — module/repository/provider/credential + lifecycle integration readiness, force-dynamic (runtime introspection).
+- **`/dashboard/operations`** (founder) — aggregates existing repositories (CRM/Vendor/Marketing/Reviews/Import) + Hermes + go-live readiness. Does not redesign any dashboard.
+- **`docs/GO_LIVE_READINESS.md`** — human-readable readiness report + production checklist.
+
+**Milestone B — Integration additions (reuse existing seams)**
+- **`vendor-import/conflict.ts`** — conflict resolution (create_new / merge / skip / manual_review, human-approved).
+- **`reviews/integration.ts`** — wires reviews ↔ CRM (`crmActivityFromReview`), booking completion (`requestReviewOnBookingComplete` reusing the email `review_request` template), Hermes (`reviewToHermes`) and Google handoff. No duplicate review model.
+- **Verified:** tsc + ESLint clean; `next build` green — `/dashboard/validation` + `/dashboard/operations` added, all other routes unchanged.
+
 ## 2026-07-28 (Phase 2 · Review Collection Flow)
 
 Trust engine — collect, moderate and (later) display verified reviews. Isolated, additive, build-safe; mirrors `payload/Reviews`, reuses the email `review_request` template and the CRM "review" lifecycle stage. No DB, provider-based.

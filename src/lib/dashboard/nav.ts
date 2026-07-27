@@ -35,6 +35,20 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "live",
   },
   {
+    label: "Operations",
+    href: "/dashboard/operations",
+    icon: "grid",
+    description: "Unified operational view — aggregates every module repository.",
+    status: "live",
+  },
+  {
+    label: "Validation",
+    href: "/dashboard/validation",
+    icon: "shield",
+    description: "Platform validation — module/repository/provider/credential readiness.",
+    status: "live",
+  },
+  {
     label: "Vendor",
     href: "/dashboard/vendor",
     icon: "truck",

@@ -1,6 +1,7 @@
 // Server-only: the email delivery boundary.
 import { randomUUID } from "node:crypto";
 import type { EmailMessage, EmailSendResult } from "@/lib/email/model";
+import { ResendEmailProvider } from "@/lib/email/resend-provider";
 
 /**
  * Email delivery boundary. Workflow orchestrators depend on this interface,
@@ -27,7 +28,16 @@ class ConsoleEmailProvider implements EmailProvider {
 
 let provider: EmailProvider | null = null;
 
+/**
+ * Selects the real provider when configured, else the console stub. Same public
+ * contract — callers and templates are untouched. Set RESEND_API_KEY + EMAIL_FROM
+ * to go live; no code change, no redeploy of logic required.
+ */
 export function getEmailProvider(): EmailProvider {
-  if (!provider) provider = new ConsoleEmailProvider();
+  if (provider) return provider;
+  provider =
+    process.env.RESEND_API_KEY && process.env.EMAIL_FROM
+      ? new ResendEmailProvider()
+      : new ConsoleEmailProvider();
   return provider;
 }

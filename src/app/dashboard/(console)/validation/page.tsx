@@ -1,6 +1,8 @@
 import { Panel, DataTable, ProgressBar, ScaffoldNote } from "@/components/dashboard";
 import { getPlatformHealth, type ModuleReadiness } from "@/lib/platform/health";
 import { getGoLiveReadiness } from "@/lib/platform/readiness";
+import { getEnvReadiness } from "@/lib/platform/env";
+import { getSecurityReadiness, type SecurityStatus } from "@/lib/platform/security";
 import { LIFECYCLE_FLOW } from "@/lib/platform/lifecycle";
 import { LIFECYCLE_LABELS } from "@/lib/crm/model";
 
@@ -26,7 +28,18 @@ const READINESS_LABEL: Record<ModuleReadiness, string> = {
  * No fake data — reads each repository's live flag and env presence at runtime.
  */
 export default async function ValidationDashboard() {
-  const [health, readiness] = await Promise.all([getPlatformHealth(), getGoLiveReadiness()]);
+  const [health, readiness, env, security] = await Promise.all([
+    getPlatformHealth(),
+    getGoLiveReadiness(),
+    Promise.resolve(getEnvReadiness()),
+    getSecurityReadiness(),
+  ]);
+
+  const secBadge: Record<SecurityStatus, string> = {
+    ok: "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
+    pending: "border-sky-400/30 bg-sky-400/10 text-sky-300",
+    attention: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+  };
 
   return (
     <div className="space-y-6">
@@ -92,6 +105,55 @@ export default async function ValidationDashboard() {
             missing: m.missingEnv.length ? m.missingEnv.join(", ") : <span className="text-white/25">—</span>,
           }))}
         />
+      </Panel>
+
+      {/* Secrets & environment */}
+      <Panel eyebrow="Security" title={`Secrets & environment (${env.present}/${env.total} present)`}>
+        {env.missingCritical.length > 0 && (
+          <p className="mb-3 rounded-lg border border-amber-400/25 bg-amber-400/[0.05] px-3 py-2 text-[12px] text-amber-200/80">
+            {env.missingCritical.length} critical secret(s) missing: {env.missingCritical.map((s) => s.key).join(", ")}
+          </p>
+        )}
+        <div className="grid gap-2 sm:grid-cols-2">
+          {env.statuses.map((s) => (
+            <div key={s.key} className="flex items-center justify-between rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2">
+              <span className="min-w-0">
+                <span className="block truncate text-[12px] text-white/75">{s.label}</span>
+                <span className="block font-mono text-[10px] text-white/35">{s.key} · {s.requiredFor}</span>
+              </span>
+              <span
+                className={`shrink-0 rounded-full border px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-[0.08em] ${
+                  s.present && s.valid
+                    ? "border-emerald-400/30 text-emerald-300"
+                    : s.present
+                      ? "border-amber-400/30 text-amber-300"
+                      : s.critical
+                        ? "border-amber-400/30 text-amber-300"
+                        : "border-white/12 text-white/40"
+                }`}
+              >
+                {s.present ? (s.valid ? "set" : "malformed") : s.critical ? "missing" : "not set"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Panel>
+
+      {/* Security readiness */}
+      <Panel eyebrow="Hardening" title="Security & operational readiness">
+        <ul className="space-y-2">
+          {security.checks.map((c) => (
+            <li key={c.label} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/8 bg-white/[0.02] px-4 py-2.5">
+              <span className="min-w-0">
+                <span className="block text-[12.5px] font-medium text-white/80">{c.label}</span>
+                <span className="block text-[11px] leading-relaxed text-white/40">{c.detail}</span>
+              </span>
+              <span className={`shrink-0 rounded-full border px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-[0.08em] ${secBadge[c.status]}`}>
+                {c.status}
+              </span>
+            </li>
+          ))}
+        </ul>
       </Panel>
 
       {/* Lifecycle integration */}

@@ -2,6 +2,17 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-28 (Phase 4 · Production Wiring — Email provider + Env/Security validation)
+
+Converts the email stub into a real, env-gated production provider and adds runtime secret/security validation — all dependency-free, build-safe, no public-interface or template changes, no fake data.
+
+- **Real email delivery** — `email/resend-provider.ts`: `ResendEmailProvider` via the built-in `fetch` to Resend's REST API (**no dependency**). `getEmailProvider()` now returns it when `RESEND_API_KEY` + `EMAIL_FROM` are set, else the console stub — same `EmailProvider` interface, same templates, same callers. Sends the moment the keys land; production stays on the console stub until then (unchanged behaviour today).
+- **Environment/secret validation** — `platform/env.ts`: declares every expected secret (label/requiredFor/critical/format), `getSecretStatuses()` / `getEnvReadiness()` check **presence + format only** (values never read or logged).
+- **Security & operational readiness** — `platform/security.ts`: RBAC, secret management, environment validation, access gate, audit logging, backup/DR, bot-protection/rate-limiting, provider health — derived from real runtime state. Reuses existing architecture; no auth redesign.
+- **Validation dashboard** — additive "Secrets & environment" and "Security & operational readiness" panels.
+- **Deferred (credential/dependency-gated, by design):** Payload/Neon repository swap, R2 storage, Gmail import — wired behind the same env-gated pattern; not activated (would need creds + a dependency install that could break the live Next 16 build).
+- **Verified:** tsc + ESLint clean; `next build` green — no route/behaviour change (email stays console stub with no keys).
+
 ## 2026-07-28 (Phase 3 · Platform Integration & Go-Live Preparation)
 
 Connects the locked architecture together — integration/aggregation layers only, no new isolated business modules. Additive, provider-based, repository-driven, Payload-/Hermes-compatible, no duplicate models, no external providers connected.

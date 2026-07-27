@@ -2,6 +2,14 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-22 (Phase 2 · Platform Validation Sprint — Vendor Import & Validation)
+
+Prepares the platform to import real vendor data (Gmail, business cards, rate sheets, brochures, contracts) — provider-based, no external service connected. Isolated, additive, build-safe; reuses the Vendor model (candidates wrap `Partial<VendorRecord>` — no duplicate model).
+
+- **`src/lib/vendor-import/`** — `model.ts` (source types, `RawVendorImport`, `VendorImportCandidate`, statuses, validation/duplicate/summary types), `source-provider.ts` (`ImportSourceProvider` + manual stub; Gmail/OCR/PDF/email-sync drop in later), `mapping.ts` (raw → `Partial<VendorRecord>`), `validation.ts` (required fields + GST/PAN/phone/email format), `duplicate.ts` (name/phone/GST match vs existing vendors), `readiness.ts` (0–100 score + status derivation), `pipeline.ts` (`runVendorImport` — fetch→map→validate→dedupe→score over interfaces), `import-repository.ts` (aggregation seam, `live:false`), `hermes.ts` (import context on the shared contract).
+- **Founder dashboard** — additive console route `/dashboard/vendor-import` (founder-gated by the console Basic Auth): import status, batch readiness, ingestion providers (active/drop-in), Hermes import assistance, and a candidates table (missing fields, duplicates, readiness). One additive nav entry.
+- **Verified:** tsc + ESLint clean; `next build` green — `/dashboard/vendor-import` static, all other routes unchanged.
+
 ## 2026-07-22 (Phase 2 · Document Management & Upload Architecture)
 
 Enterprise document layer — the single document architecture for every module. Provider-driven, storage-agnostic; **no storage/DB/upload dependency**. Isolated, additive, build-safe, mirrors `payload/Documents`.

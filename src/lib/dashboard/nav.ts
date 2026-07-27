@@ -42,6 +42,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Vendor Import",
+    href: "/dashboard/vendor-import",
+    icon: "grid",
+    description: "Founder — import & validate real vendor data (Gmail, cards, rate sheets…).",
+    status: "scaffold",
+  },
+  {
     label: "CRM",
     href: "/dashboard/crm",
     icon: "funnel",

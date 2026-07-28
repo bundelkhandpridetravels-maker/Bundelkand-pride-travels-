@@ -2,6 +2,19 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-28 (Phase 3 · Business Integration — M1: Vendor Onboarding System)
+
+First milestone of the **Business Integration & Go-Live** phase: turns the architected vendor supply model into a real operational workflow. **Staff-managed onboarding only** (founder policy) — BPT runs a curated, verified-supplier ecosystem, so every hotel, DMC, transport operator, guide and activity partner is reviewed by the internal operations team before becoming active. Additive; no completed architecture redesigned, no duplicate model.
+
+- **Onboarding state machine** — `vendor/onboarding.ts`: stages (`identified → profile → documents → verification → agreement → active`, plus `rejected`/`suspended`) are **derived** from fields the Payload `vendors` collection already defines (`verificationStatus`/`agreementStatus`/`status`). **No new persisted status enum.** Guarded transitions: a supplier cannot reach verification with unmet required items, nor activate without a signed agreement. Verification/activation/rejection/suspension all require human approval (security-architecture §12) — Hermes may prepare, never execute.
+- **Requirement checklist** — mirrors existing schema fields. Category-specific compliance rules (hotel certifications, transport permits/insurance, guide licences) are a deliberately **empty extension point** (`TYPE_REQUIREMENTS`) — real business rules come from the operations team, not invented.
+- **Channel roadmap in code** — `ONBOARDING_CHANNELS`: `staff` enabled (Phase 3); `self_service` (Phase 4) and `import` (Phase 5) declared but disabled, and plug into this same state machine.
+- **Repository seam** — `vendor/onboarding-repository.ts`: reports `live:false`; writes are logged, never silently "saved". Going live = a Payload implementation writing the SAME `vendors` record the register reads.
+- **Staff intake** — `vendor/onboarding-intake.ts` (Zod, reusing the import validator's GST/PAN/phone formats) + `POST /api/vendors/onboarding`. Suppliers are captured `unverified` — intake never grants trust.
+- **`/dashboard/vendor-onboarding`** — pipeline, completeness, channels, checklist, intake form, Hermes panel, register. `/dashboard/vendor` untouched.
+- **Security** — the proxy matcher now also gates `/api/vendors/*` with the console Basic Auth (fails closed): this staff endpoint creates supplier records and must not be public. Public sinks (`/api/enquiries`, `/api/bookings`, `/api/reviews`) are deliberately unmatched — verified still reachable in production.
+- **Verified:** tsc + ESLint clean; `next build` green (53/53 pages); 15 runtime state-machine checks (all derivations + every guard); production verified — public 200, new console/API 503 fail-closed, public sinks 422.
+
 ## 2026-07-28 (Phase 4 · Production Wiring — Email provider + Env/Security validation)
 
 Converts the email stub into a real, env-gated production provider and adds runtime secret/security validation — all dependency-free, build-safe, no public-interface or template changes, no fake data.

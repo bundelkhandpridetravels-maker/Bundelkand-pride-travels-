@@ -11,6 +11,18 @@ export const EMAIL_TEMPLATES = [
   "quote_sent",
   "booking_payment_pending",
   "review_request",
+
+  // Vendor lifecycle (Phase 3 M2) — driven by the onboarding state machine
+  // (src/lib/vendor/onboarding.ts). Added to THIS registry rather than a parallel
+  // one, so the Admin surface and Hermes see every template in one place.
+  "vendor_onboarding_invite",
+  "vendor_details_request",
+  "vendor_documents_request",
+  "vendor_verification_approved",
+  "vendor_verification_rejected",
+  "vendor_agreement_sent",
+  "vendor_activated",
+  "vendor_suspended",
 ] as const;
 export type EmailTemplateId = (typeof EMAIL_TEMPLATES)[number];
 
@@ -44,6 +56,47 @@ export const EMAIL_TEMPLATE_META: Record<
     label: "Review request",
     trigger: "Trip completed",
     audience: "customer",
+  },
+
+  vendor_onboarding_invite: {
+    label: "Vendor onboarding invitation",
+    trigger: "Supplier captured by operations",
+    audience: "vendor",
+  },
+  vendor_details_request: {
+    label: "Vendor details request",
+    trigger: "Profile incomplete",
+    audience: "vendor",
+  },
+  vendor_documents_request: {
+    label: "Vendor documents request",
+    trigger: "Compliance documents outstanding",
+    audience: "vendor",
+  },
+  vendor_verification_approved: {
+    label: "Vendor verification approved",
+    trigger: "Operations verified the supplier (human approval)",
+    audience: "vendor",
+  },
+  vendor_verification_rejected: {
+    label: "Vendor verification declined",
+    trigger: "Operations declined the supplier (human approval)",
+    audience: "vendor",
+  },
+  vendor_agreement_sent: {
+    label: "Vendor agreement sent",
+    trigger: "Agreement issued for signature (human approval)",
+    audience: "vendor",
+  },
+  vendor_activated: {
+    label: "Vendor activated",
+    trigger: "Supplier activated in the network (human approval)",
+    audience: "vendor",
+  },
+  vendor_suspended: {
+    label: "Vendor suspended",
+    trigger: "Supplier withdrawn from allocation (human approval)",
+    audience: "vendor",
   },
 };
 

@@ -9,6 +9,9 @@ import {
 import { getVendorOnboardingRepository } from "@/lib/vendor/onboarding-repository";
 import { getHermesInsights } from "@/lib/hermes";
 import { VENDOR_TYPE_LABELS } from "@/lib/vendor/model";
+import { getEmailProvider } from "@/lib/email/email-provider";
+import { EMAIL_TEMPLATE_META } from "@/lib/email/model";
+import { STAGE_EMAIL, VENDOR_EMAIL_POLICIES } from "@/lib/email/vendor-workflow";
 import {
   BASE_REQUIREMENTS,
   evaluateOnboarding,
@@ -17,6 +20,7 @@ import {
   ONBOARDING_EXITS,
   ONBOARDING_STAGE_DESCRIPTIONS,
   ONBOARDING_STAGE_LABELS,
+  ONBOARDING_STAGES,
 } from "@/lib/vendor/onboarding";
 
 export const metadata = { title: "Vendor Onboarding" };
@@ -36,6 +40,10 @@ export default async function VendorOnboardingDashboard() {
     repo.list(),
     getHermesInsights("vendor"),
   ]);
+
+  // Delivery status — reports the real provider selected from the environment.
+  const emailProviderName = getEmailProvider().name;
+  const emailLive = emailProviderName !== "console";
 
   return (
     <div className="space-y-6">
@@ -147,6 +155,67 @@ export default async function VendorOnboardingDashboard() {
           Category-specific rules (hotel certifications, transport permits and insurance,
           guide licences) are <strong>not assumed</strong> — supply them and they attach per
           supplier category automatically.
+        </p>
+      </Panel>
+
+      {/* Email automation (M2) */}
+      <Panel eyebrow="Automation" title="Vendor email by stage">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <span className="font-mono text-[9.5px] uppercase tracking-[0.12em] text-white/40">
+            Delivery
+          </span>
+          <span
+            className={`rounded-full border px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-[0.08em] ${
+              emailLive
+                ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                : "border-white/12 text-white/40"
+            }`}
+          >
+            {emailLive ? `live · ${emailProviderName}` : `${emailProviderName} — logged, not delivered`}
+          </span>
+        </div>
+
+        <ul className="space-y-2">
+          {ONBOARDING_STAGES.map((stage) => {
+            const template = STAGE_EMAIL[stage];
+            return (
+              <li
+                key={stage}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/8 bg-white/[0.02] px-3.5 py-2.5"
+              >
+                <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/45">
+                  {ONBOARDING_STAGE_LABELS[stage]}
+                </span>
+                {template ? (
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="text-[12.5px] text-white/70">
+                      {EMAIL_TEMPLATE_META[template].label}
+                    </span>
+                    <span
+                      className={`rounded-full border px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-[0.08em] ${
+                        VENDOR_EMAIL_POLICIES[template].autoSend
+                          ? "border-sky-400/30 bg-sky-400/10 text-sky-300"
+                          : "border-gold/30 bg-gold/10 text-gold"
+                      }`}
+                      title={VENDOR_EMAIL_POLICIES[template].rationale}
+                    >
+                      {VENDOR_EMAIL_POLICIES[template].autoSend ? "auto" : "human approval"}
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-[12px] text-white/25">No automated email</span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+
+        <p className="mt-3 text-[11.5px] leading-relaxed text-white/40">
+          Approval-gated emails are <strong>drafted and held</strong> — verification decisions,
+          agreement dispatch, activation and suspension never leave the building without a
+          person approving them (security-architecture §12). The gate is enforced in
+          `dispatchVendorEmail()`, not just documented. Reminder cadences are declared but
+          nothing fires on a timer — no scheduler is wired yet.
         </p>
       </Panel>
 

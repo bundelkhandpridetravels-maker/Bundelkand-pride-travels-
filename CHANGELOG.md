@@ -2,6 +2,15 @@
 
 All notable changes to this project are logged here, most recent first.
 
+## 2026-07-28 (Phase 3 · Business Integration — M2: Vendor Email Automation)
+
+Vendor communication driven by the M1 onboarding state machine — a stage **is** the trigger, so there is no second source of truth about where a supplier stands. Additive: `email/model.ts` gains 8 registry entries (53 insertions, **0 deletions**); `templates.ts` and `workflow.ts` untouched; delivery reuses the existing `getEmailProvider()`, so Resend takes over the moment `RESEND_API_KEY` + `EMAIL_FROM` are set with no change to this code.
+
+- **`email/vendor-templates.ts`** — pure renderers for 8 vendor lifecycle emails (invite, details request, documents request, verification approved/declined, agreement sent, activated, suspended). **Process communication only:** no rates, commission, margins, payment terms or cancellation policy. The agreement email points to the document rather than restating any term.
+- **`email/vendor-workflow.ts`** — stage→template map, per-template policy, and the **approval gate enforced in code** (security-architecture §12). Routine chasers (invite/details/documents) auto-send; verification approved/declined, agreement dispatch, activation and suspension are **drafted and returned** for a human to approve and cannot be sent without an approver. Never sends without a recipient. Reminder cadences are declared as data, but **nothing fires on a timer** — no scheduler is wired.
+- **`/dashboard/vendor-onboarding`** — "Vendor email by stage" panel: the map, the auto vs human-approval policy (with rationale), and the real provider delivery status.
+- **Verified:** tsc + ESLint clean; `next build` green (53/53); **30 runtime checks** — every gated template held, whitespace `approvedBy` rejected, no-recipient skipped, console provider `delivered:false`, plus a regex sweep proving no template leaks invented commercial terms. Production re-verified: public 200, public sinks 422, internal 503 fail-closed.
+
 ## 2026-07-28 (Phase 3 · Business Integration — M1: Vendor Onboarding System)
 
 First milestone of the **Business Integration & Go-Live** phase: turns the architected vendor supply model into a real operational workflow. **Staff-managed onboarding only** (founder policy) — BPT runs a curated, verified-supplier ecosystem, so every hotel, DMC, transport operator, guide and activity partner is reviewed by the internal operations team before becoming active. Additive; no completed architecture redesigned, no duplicate model.

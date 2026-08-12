@@ -33,6 +33,23 @@ export default buildConfig({
   secret: process.env.PAYLOAD_SECRET ?? "",
 
   db: postgresAdapter({
+    /**
+     * ⚠️ SAFETY — DO NOT SET THIS TO TRUE.
+     *
+     * `push` lets Payload silently reshape the database to match the code on
+     * every startup. It is a local-development convenience and it is dangerous
+     * anywhere real: it can alter or drop columns with no migration, no review
+     * and no record of what happened.
+     *
+     * With `push: false`, the schema can ONLY change by applying a migration
+     * from src/migrations/ — a file that is reviewed and committed to git. That
+     * is what keeps development, preview and production provably identical, and
+     * what makes an accidental data loss impossible.
+     *
+     * To change the schema: edit the collection, generate a migration, review
+     * the SQL, commit it, deploy.
+     */
+    push: false,
     pool: { connectionString: process.env.DATABASE_URL ?? "" },
   }),
 

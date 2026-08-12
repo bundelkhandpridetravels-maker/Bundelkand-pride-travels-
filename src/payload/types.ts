@@ -1,18 +1,32 @@
 /**
- * Local, build-safe mirror of Payload CMS's collection-config API.
+ * Payload type surface for the BPT schema.
  *
- * WHY THIS EXISTS: the backend is being designed before it is wired. This repo
- * runs Next 16 (Payload 3 targets Next 15) and auto-deploys `main`, so we do NOT
- * install `payload` yet — that would risk breaking the live build. These types
- * mirror Payload's real shape closely enough that migration is mechanical:
- * change `import ... from "@/payload/types"` to `import ... from "payload"`,
- * add payload.config.ts + the /admin route + DATABASE_URL.
+ * HISTORY: this file used to be a hand-written *mirror* of Payload's API, because
+ * Payload could not be installed while `main` auto-deployed and Payload 3 did not
+ * yet support Next 16. That constraint is gone — Payload 3.88.0 officially
+ * supports Next 16.2.x — so the mirror has been replaced by the real thing.
  *
- * Nothing under src/payload/ is imported by any page/route, so it stays out of
- * the production bundle. It is type-checked (design is validated) but inert.
+ * The 19 collection files did NOT have to change their imports: they still
+ * `import type { CollectionConfig } from "@/payload/types"`, but that name now
+ * resolves to Payload's own type. The compiler therefore checks every collection
+ * against the real CMS contract instead of against our approximation.
+ *
+ * What stays local is our DOMAIN vocabulary — roles, admin groups, the collection
+ * slug union — because those are BPT's design decisions, not Payload's.
  */
 
-/** Every collection slug — gives relationships compile-time safety. */
+// ── Real Payload types, re-exported under the names the schema already uses.
+export type {
+  Access,
+  AccessArgs,
+  AccessResult,
+  CollectionConfig,
+  Field,
+  PayloadRequest,
+  Where,
+} from "payload";
+
+/** Every collection slug — gives our own helpers compile-time safety. */
 export type CollectionSlug =
   | "users"
   | "customers"
@@ -57,104 +71,29 @@ export type AdminGroup =
   | "Content"
   | "Legal";
 
-export type FieldType =
-  | "text"
-  | "textarea"
-  | "richText"
-  | "number"
-  | "email"
-  | "date"
-  | "checkbox"
-  | "select"
-  | "radio"
-  | "relationship"
-  | "array"
-  | "group"
-  | "json"
-  | "upload"
-  | "point";
-
+/** Select/radio option shape used by our field helpers. */
 export interface FieldOption {
   label: string;
   value: string;
 }
 
-export interface FieldAdmin {
-  description?: string;
-  readOnly?: boolean;
-  position?: "sidebar";
-  /** Marks fields an AI workflow may populate later (design intent only). */
-  aiWritable?: boolean;
-}
-
-export interface Field {
-  name: string;
-  type: FieldType;
-  label?: string;
-  required?: boolean;
-  unique?: boolean;
-  index?: boolean;
-  localized?: boolean;
-  hasMany?: boolean;
-  relationTo?: CollectionSlug | CollectionSlug[];
-  options?: FieldOption[];
-  /** Sub-fields for `array` and `group`. */
-  fields?: Field[];
-  defaultValue?: unknown;
-  min?: number;
-  max?: number;
-  admin?: FieldAdmin;
-}
-
-/** Access-control function signature — mirrors Payload's `Access`. */
+/**
+ * The shape our RBAC helpers read off `req.user`. Payload types `req.user` from
+ * the auth collection with an `any` index signature, so this narrows it to the
+ * fields we actually rely on without fighting the CMS's own typing.
+ */
 export interface AuthUser {
-  id: string;
+  /** Payload document IDs are `string | number` depending on the adapter. */
+  id: string | number;
   email?: string;
   role?: Role;
   /** For vendor-scoped users: the vendor document they belong to. */
   vendor?: string;
 }
 
-export interface AccessArgs {
-  req: { user?: AuthUser | null };
-  id?: string;
-  data?: Record<string, unknown>;
-}
-
-/** `true`/`false`, or a Where-style constraint object for row-level access. */
-export type AccessResult = boolean | Record<string, unknown>;
-export type Access = (args: AccessArgs) => AccessResult;
-
-export interface CollectionAccess {
-  read?: Access;
-  create?: Access;
-  update?: Access;
-  delete?: Access;
-  admin?: Access;
-}
-
-export interface UploadConfig {
-  staticDir?: string;
-  mimeTypes?: string[];
-  /** Named image sizes generated on upload. */
-  imageSizes?: { name: string; width: number; height?: number }[];
-}
-
-export interface CollectionConfig {
-  slug: CollectionSlug;
-  labels?: { singular: string; plural: string };
-  admin?: {
-    useAsTitle?: string;
-    defaultColumns?: string[];
-    group?: AdminGroup;
-    description?: string;
-  };
-  access?: CollectionAccess;
-  /** Enables Payload auth on this collection (Users). */
-  auth?: boolean;
-  /** Enables file uploads (Media, Documents). */
-  upload?: boolean | UploadConfig;
-  timestamps?: boolean;
-  versions?: boolean | { drafts?: boolean };
-  fields: Field[];
-}
+/**
+ * Marker for fields a Hermes AI workflow may populate. Stored under Payload's
+ * native `admin.custom`, so provenance stays explicit without inventing a
+ * non-standard admin property.
+ */
+export const AI_WRITABLE = { aiWritable: true } as const;

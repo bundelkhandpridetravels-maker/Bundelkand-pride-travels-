@@ -1,3 +1,4 @@
+import { AI_WRITABLE } from "@/payload/types";
 import type { CollectionConfig } from "@/payload/types";
 import { isStaff, vendorScoped } from "@/payload/access";
 import { relation, statusField } from "@/payload/fields/common";
@@ -34,7 +35,7 @@ const TripCaptains: CollectionConfig = {
       type: "number",
       min: 0,
       max: 100,
-      admin: { readOnly: true, aiWritable: true },
+      admin: { readOnly: true, custom: AI_WRITABLE },
     },
     { name: "referralCode", type: "text", unique: true, index: true },
     statusField(

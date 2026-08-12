@@ -3,7 +3,7 @@
  * assembled from, so shapes (money, contact, address, SEO, status, geo) stay
  * consistent across the whole schema and can evolve in one place.
  */
-import type { CollectionSlug, Field, FieldOption } from "@/payload/types";
+import { AI_WRITABLE, type CollectionSlug, type Field, type FieldOption } from "@/payload/types";
 
 /** Supported currencies — multi-country from day one (vision: global expansion). */
 export const CURRENCIES: FieldOption[] = [
@@ -99,34 +99,47 @@ export const seoGroup: Field = {
   ],
 };
 
-/** A relationship field with sensible defaults. */
+/**
+ * A relationship field with sensible defaults.
+ *
+ * Payload types `RelationshipField` as a discriminated union (single vs
+ * polymorphic, hasMany true vs false), so the two cases are constructed
+ * explicitly rather than with one object carrying `undefined` discriminators —
+ * that would match neither branch of the union.
+ */
 export const relation = (
   name: string,
   relationTo: CollectionSlug | CollectionSlug[],
   opts: { hasMany?: boolean; required?: boolean } = {},
-): Field => ({
-  name,
-  type: "relationship",
-  relationTo,
-  hasMany: opts.hasMany,
-  required: opts.required,
-  index: true,
-});
+): Field => {
+  const base = { name, required: opts.required, index: true } as const;
+
+  if (Array.isArray(relationTo)) {
+    return opts.hasMany
+      ? { ...base, type: "relationship", relationTo: [...relationTo], hasMany: true }
+      : { ...base, type: "relationship", relationTo: [...relationTo] };
+  }
+
+  return opts.hasMany
+    ? { ...base, type: "relationship", relationTo, hasMany: true }
+    : { ...base, type: "relationship", relationTo };
+};
 
 /**
  * AI-assist block. Present on records AI workflows will enrich (leads, reviews,
  * vendors). Populated by Hermes AI later; never blocks manual use. Design intent
- * is flagged via `admin.aiWritable` so provenance stays explicit.
+ * is flagged via Payload's native `admin.custom` (AI_WRITABLE) so provenance
+ * stays explicit.
  */
 export const aiAssistGroup: Field = {
   name: "ai",
   type: "group",
   admin: { description: "AI-generated assistance (Hermes) — advisory only" },
   fields: [
-    { name: "summary", type: "textarea", admin: { readOnly: true, aiWritable: true } },
-    { name: "score", type: "number", admin: { readOnly: true, aiWritable: true } },
-    { name: "nextAction", type: "text", admin: { readOnly: true, aiWritable: true } },
-    { name: "lastEvaluatedAt", type: "date", admin: { readOnly: true, aiWritable: true } },
+    { name: "summary", type: "textarea", admin: { readOnly: true, custom: AI_WRITABLE } },
+    { name: "score", type: "number", admin: { readOnly: true, custom: AI_WRITABLE } },
+    { name: "nextAction", type: "text", admin: { readOnly: true, custom: AI_WRITABLE } },
+    { name: "lastEvaluatedAt", type: "date", admin: { readOnly: true, custom: AI_WRITABLE } },
   ],
 };
 

@@ -17,7 +17,7 @@ import type { CollectionConfig, CollectionSlug, Role } from "@/payload/types";
 export { collections };
 
 /** Every slug defined, for quick reference / tests. */
-export const collectionSlugs: CollectionSlug[] = collections.map((c) => c.slug);
+export const collectionSlugs: string[] = collections.map((c) => c.slug);
 
 /** Roles the RBAC layer recognises. */
 export const roles: Role[] = ROLES;
@@ -27,6 +27,35 @@ export function getCollection(slug: CollectionSlug): CollectionConfig | undefine
   return collections.find((c) => c.slug === slug);
 }
 
+/* ------------------------------------------------------------------ *
+ * Field introspection
+ *
+ * Payload's `Field` is a discriminated union — `relationTo`, `fields` and even
+ * `name` exist only on some members. These guards narrow safely instead of
+ * assuming a flat shape, so the validator keeps working as Payload's union
+ * evolves.
+ * ------------------------------------------------------------------ */
+
+type SchemaField = CollectionConfig["fields"][number];
+
+function relationTargets(field: SchemaField): string[] {
+  if (!("relationTo" in field)) return [];
+  const target = (field as { relationTo?: unknown }).relationTo;
+  if (typeof target === "string") return [target];
+  if (Array.isArray(target)) return target.filter((t): t is string => typeof t === "string");
+  return [];
+}
+
+function subFields(field: SchemaField): SchemaField[] {
+  if (!("fields" in field)) return [];
+  const nested = (field as { fields?: unknown }).fields;
+  return Array.isArray(nested) ? (nested as SchemaField[]) : [];
+}
+
+function fieldName(field: SchemaField): string {
+  return "name" in field && typeof field.name === "string" ? field.name : "(unnamed)";
+}
+
 /**
  * Design-time integrity check — no duplicate slugs, and every `relationTo`
  * points at a real collection. Pure and side-effect-free; a wiring-phase test
@@ -34,24 +63,22 @@ export function getCollection(slug: CollectionSlug): CollectionConfig | undefine
  */
 export function validateSchema(): string[] {
   const errors: string[] = [];
-  const slugs = new Set<CollectionSlug>();
+  const slugs = new Set<string>();
 
   for (const c of collections) {
     if (slugs.has(c.slug)) errors.push(`Duplicate collection slug: ${c.slug}`);
     slugs.add(c.slug);
   }
 
-  const walk = (fields: CollectionConfig["fields"], where: string) => {
+  const walk = (fields: SchemaField[], where: string) => {
     for (const f of fields) {
-      if (f.relationTo) {
-        const targets = Array.isArray(f.relationTo) ? f.relationTo : [f.relationTo];
-        for (const t of targets) {
-          if (!slugs.has(t)) {
-            errors.push(`${where}.${f.name}: relationTo unknown collection "${t}"`);
-          }
+      for (const target of relationTargets(f)) {
+        if (!slugs.has(target)) {
+          errors.push(`${where}.${fieldName(f)}: relationTo unknown collection "${target}"`);
         }
       }
-      if (f.fields) walk(f.fields, `${where}.${f.name}`);
+      const nested = subFields(f);
+      if (nested.length > 0) walk(nested, `${where}.${fieldName(f)}`);
     }
   };
 

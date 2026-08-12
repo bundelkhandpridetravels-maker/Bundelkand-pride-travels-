@@ -1,3 +1,4 @@
+import { AI_WRITABLE } from "@/payload/types";
 import type { CollectionConfig } from "@/payload/types";
 import { isStaff } from "@/payload/access";
 import { contactGroup, relation, statusField } from "@/payload/fields/common";
@@ -41,7 +42,7 @@ const Dmcs: CollectionConfig = {
         { label: "Expired", value: "expired" },
       ],
     },
-    { name: "rating", type: "number", min: 0, max: 5, admin: { readOnly: true, aiWritable: true } },
+    { name: "rating", type: "number", min: 0, max: 5, admin: { readOnly: true, custom: AI_WRITABLE } },
     statusField(),
   ],
 };

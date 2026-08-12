@@ -1,3 +1,4 @@
+import { AI_WRITABLE } from "@/payload/types";
 import type { CollectionConfig } from "@/payload/types";
 import { isStaff, vendorScoped } from "@/payload/access";
 import {
@@ -83,7 +84,7 @@ const Vendors: CollectionConfig = {
       type: "number",
       min: 0,
       max: 100,
-      admin: { readOnly: true, aiWritable: true, position: "sidebar" },
+      admin: { readOnly: true, custom: AI_WRITABLE, position: "sidebar" },
     },
     relation("documents", "documents", { hasMany: true }),
     { name: "photos", type: "upload", relationTo: "media", hasMany: true },

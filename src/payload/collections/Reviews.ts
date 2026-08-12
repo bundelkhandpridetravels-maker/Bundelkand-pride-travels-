@@ -1,3 +1,4 @@
+import { AI_WRITABLE } from "@/payload/types";
 import type { CollectionConfig } from "@/payload/types";
 import { isStaff } from "@/payload/access";
 import { relation } from "@/payload/fields/common";
@@ -46,7 +47,7 @@ const Reviews: CollectionConfig = {
     {
       name: "sentiment",
       type: "select",
-      admin: { readOnly: true, aiWritable: true },
+      admin: { readOnly: true, custom: AI_WRITABLE },
       options: [
         { label: "Positive", value: "positive" },
         { label: "Neutral", value: "neutral" },

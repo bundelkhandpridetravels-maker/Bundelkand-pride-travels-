@@ -5,7 +5,7 @@ import BookingProvider from "@/components/booking/BookingProvider";
 import SmoothScroll from "@/components/motion/SmoothScroll";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { siteDescription, siteName, siteUrl } from "@/lib/site";
-import "./globals.css";
+import "../globals.css";
 
 /**
  * All three families are variable fonts, so we omit `weight` and let next/font

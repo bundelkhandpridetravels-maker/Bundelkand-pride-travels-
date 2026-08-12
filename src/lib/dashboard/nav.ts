@@ -63,6 +63,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Contracts",
+    href: "/dashboard/contracts",
+    icon: "shield",
+    description: "Agreement register — status, signing, expiry and renewal watchlist.",
+    status: "scaffold",
+  },
+  {
     label: "Vendor Import",
     href: "/dashboard/vendor-import",
     icon: "grid",

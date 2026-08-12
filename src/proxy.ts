@@ -81,11 +81,16 @@ export const config = {
   // Match the console hub (/dashboard) and everything nested under it. Both
   // entries are listed explicitly so the exact /dashboard route is always gated.
   //
-  // /api/vendors/* is internal staff tooling (vendor onboarding intake creates
-  // supplier records), so it is gated by the same lock and fails closed. The
-  // PUBLIC sinks — /api/enquiries, /api/bookings, /api/reviews — are deliberately
-  // NOT matched and stay open. Keep internal API routes under /api/vendors (or
-  // add an equally explicit prefix here); never leave a staff write endpoint
-  // outside this matcher.
-  matcher: ["/dashboard", "/dashboard/:path*", "/api/vendors/:path*"],
+  // /api/vendors/* and /api/contracts/* are internal staff tooling (vendor
+  // onboarding intake creates supplier records; contract intake creates legal
+  // records), so they are gated by the same lock and fail closed. The PUBLIC
+  // sinks — /api/enquiries, /api/bookings, /api/reviews — are deliberately NOT
+  // matched and stay open. Add an equally explicit prefix here for any new staff
+  // endpoint; never leave a staff write endpoint outside this matcher.
+  matcher: [
+    "/dashboard",
+    "/dashboard/:path*",
+    "/api/vendors/:path*",
+    "/api/contracts/:path*",
+  ],
 };

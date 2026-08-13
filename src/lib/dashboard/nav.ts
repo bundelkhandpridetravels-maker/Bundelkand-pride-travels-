@@ -63,6 +63,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Rate Sheets",
+    href: "/dashboard/rate-sheets",
+    icon: "chart",
+    description: "Supplier price book — validity, seasons, validation and renewals.",
+    status: "scaffold",
+  },
+  {
     label: "Contracts",
     href: "/dashboard/contracts",
     icon: "shield",

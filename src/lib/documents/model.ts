@@ -25,6 +25,7 @@ const VENDOR_KINDS = [
   "vend_bank_details",
   "vend_cancelled_cheque",
   "vend_agreement",
+  "vend_rate_sheet",
   "vend_hotel_brochure",
   "vend_hotel_images",
   "vend_vehicle_images",
@@ -156,6 +157,10 @@ const CONFIDENTIAL_KINDS = new Set<DocumentKind>([
   "vend_bank_details",
   "vend_cancelled_cheque",
   "vend_agreement",
+  // A rate sheet carries the supplier's prices. Confidential — NOT founder_only:
+  // operations must be able to file and chase supplier paperwork, while the
+  // amounts themselves stay founder-only via the rates layer's own redaction.
+  "vend_rate_sheet",
   "book_invoice",
   "book_receipt",
 ]);

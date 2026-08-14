@@ -70,6 +70,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Documents",
+    href: "/dashboard/documents",
+    icon: "shield",
+    description: "Document register — sources, versions, validity and integrity.",
+    status: "scaffold",
+  },
+  {
     label: "Contracts",
     href: "/dashboard/contracts",
     icon: "shield",

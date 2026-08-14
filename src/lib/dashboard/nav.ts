@@ -91,6 +91,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Customers",
+    href: "/dashboard/customers",
+    icon: "users",
+    description: "Customer register — history, documents, duplicates and consent.",
+    status: "scaffold",
+  },
+  {
     label: "CRM",
     href: "/dashboard/crm",
     icon: "funnel",

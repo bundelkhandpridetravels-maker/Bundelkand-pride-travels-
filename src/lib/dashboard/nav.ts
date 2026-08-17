@@ -63,6 +63,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Pricing",
+    href: "/dashboard/pricing",
+    icon: "chart",
+    description: "Pricing engine — money model, markup rules, rate resolution, margin.",
+    status: "scaffold",
+  },
+  {
     label: "Rate Sheets",
     href: "/dashboard/rate-sheets",
     icon: "chart",

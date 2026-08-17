@@ -24,11 +24,13 @@
  *
  *   axis 1  document / commercial visibility  → DOCUMENT_ROLE_BRIDGE
  *   axis 2  customer contact (PII)            → CUSTOMER_CONTACT_ROLES
+ *   axis 3  pricing cost / margin (M7)        → PRICING_COST_ROLES
  *
  * A salesperson needs a customer's phone number and must not see what the hotel
- * charges. A single privilege ladder cannot express that; two axes can, and they
- * do it without inventing a third vocabulary or touching the frozen documents
- * permission matrix.
+ * charges. Operations needs to see what the hotel charges and control margin,
+ * without inheriting the founder's contract values. A single privilege ladder
+ * cannot express either of those; independent axes can, and they do it without
+ * inventing a new vocabulary or touching the frozen documents permission matrix.
  *
  * Pure data and pure functions. No I/O.
  */
@@ -112,6 +114,61 @@ export function isStaffRole(role: Role): boolean {
 }
 
 /* ------------------------------------------------------------------ *
+ * Axis 3 — pricing cost / margin visibility (M7)
+ * ------------------------------------------------------------------ */
+
+/**
+ * Who may see what a trip COSTS and what margin it earns.
+ *
+ * Operations and Finance run margin control — that is Person 2's job, and a
+ * pricing engine whose operator cannot see cost is not an operating tool. Sales
+ * is deliberately absent: they quote the selling price and never need the
+ * supplier's number to do it.
+ *
+ * ⚠️ THIS AXIS IS INDEPENDENT, AND THAT IS THE POINT. It is NOT derived from
+ * DOCUMENT_ROLE_BRIDGE, so granting cost visibility here widens nothing on the
+ * document axis: `admin`/`ops` still act as `operations` for documents, still
+ * cannot read `founder_only`, and M4's founder-only rate-sheet amounts
+ * (`canViewRateAmounts`) are untouched and still reachable only by the explicit
+ * founder actor.
+ *
+ * HONEST NOTE ON THE OVERLAP: a computed component cost is derived FROM a
+ * supplier rate, so granting ops cost visibility does disclose supplier pricing
+ * for the components they price. The two gates protect different surfaces — the
+ * raw rate-sheet register (founder-only, M4) versus a computed quote breakdown
+ * (this axis) — and that overlap is a deliberate consequence of the approved
+ * business model, not an oversight.
+ */
+export const PRICING_COST_ROLES: readonly Role[] = ["admin", "ops"];
+
+/** Margin is not broader than cost — you cannot infer one without the other. */
+export const PRICING_MARGIN_ROLES: readonly Role[] = ["admin", "ops"];
+
+export function canViewPricingCost(role: Role): boolean {
+  return PRICING_COST_ROLES.includes(role);
+}
+
+export function canViewPricingMargin(role: Role): boolean {
+  return PRICING_MARGIN_ROLES.includes(role);
+}
+
+/**
+ * Approving exceptional pricing — a discount below policy, a loss-making quote,
+ * a one-off rate.
+ *
+ * Deliberately EMPTY. Pricing authority sits with the founder, and `founder` is
+ * not a Payload role: it is granted explicitly, exactly as M4's rate-sheet
+ * activation requires a named human approver rather than a role check. Leaving
+ * this empty means no signed-in user silently acquires pricing authority; the
+ * approval must be an explicit, recorded act.
+ */
+export const PRICING_APPROVAL_ROLES: readonly Role[] = [];
+
+export function canApprovePricingException(role: Role): boolean {
+  return PRICING_APPROVAL_ROLES.includes(role);
+}
+
+/* ------------------------------------------------------------------ *
  * Reporting
  * ------------------------------------------------------------------ */
 
@@ -119,6 +176,8 @@ export type RoleBridgeEntry = {
   role: Role;
   documentRole: DocumentActorRole;
   customerContact: boolean;
+  pricingCost: boolean;
+  pricingMargin: boolean;
   staff: boolean;
 };
 
@@ -128,6 +187,8 @@ export function describeRoleBridge(): RoleBridgeEntry[] {
     role,
     documentRole: DOCUMENT_ROLE_BRIDGE[role],
     customerContact: canAccessCustomerContact(role),
+    pricingCost: canViewPricingCost(role),
+    pricingMargin: canViewPricingMargin(role),
     staff: isStaffRole(role),
   }));
 }

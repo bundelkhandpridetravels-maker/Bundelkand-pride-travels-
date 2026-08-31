@@ -42,8 +42,66 @@ export type RateSeason = {
 };
 
 /* ------------------------------------------------------------------ *
+ * Age bands
+ * ------------------------------------------------------------------ */
+
+/**
+ * A band the SUPPLIER prices a person under, declared on their own sheet.
+ *
+ * ⚠️ THIS IS NOT `party/model.ts` `AgeBand`, AND MUST NOT BE MERGED WITH IT.
+ * That one maps an age to a `GuestType` — a fact about a traveller, held in a
+ * global registry. This one identifies a priced ROW, and lives on the sheet
+ * that declared it. Reusing the party type would drag `guestType` into the
+ * supply-side price book and impose one global band set on every supplier.
+ *
+ * WHY IT IS SHEET-LOCAL, exactly like `RateSeason`
+ * Real evidence: one consolidator's sheet carries "Child Between 06 years to
+ * 12 years" for some properties and "Child Between 08 years to 12 years" for
+ * others. Bands differ per property inside a single supplier, so no vendor-wide
+ * or platform-wide registry can hold them. A line references a band by id and
+ * validation refuses an id the sheet never declared — the same mechanism, and
+ * the same refusal, as `seasonId` and `season_unknown`.
+ *
+ * `label` is the vendor's own wording, carried through untouched. The bounds
+ * are OPTIONAL because a supplier may name a band without stating its ages, and
+ * requiring them would force us to invent the numbers. `maxAgeInclusive` is
+ * inclusive for the same reason M4 keeps season dates inclusive: it is how
+ * suppliers write it, and an exclusive bound shifts every boundary by a year.
+ *
+ * ⚠️ NO BAND VALUES ARE DEFINED ANYWHERE IN THIS MODULE. Where a child stops
+ * being an infant is supplier and founder data — see `MARKUP_RULES`,
+ * `AGE_BANDS` and `CATEGORY_SUBSTITUTIONS` for the same deliberate emptiness.
+ */
+export type RateAgeBand = {
+  id: string;
+  /** The vendor's own wording, e.g. as printed in their column header. */
+  label: string;
+  minAgeInclusive?: number;
+  maxAgeInclusive?: number;
+};
+
+/* ------------------------------------------------------------------ *
  * Rate lines
  * ------------------------------------------------------------------ */
+
+/**
+ * What a rate line prices.
+ *
+ * `room` — the room itself, at a stated occupancy. The original and default.
+ * `person` — one additional person, identified by the supplier's age band.
+ *
+ * These COMPOSE rather than compete: a real sheet prices a double room AND a
+ * child in that room, and a booking of two adults plus a child resolves to both
+ * lines. Composition happens above M4; the resolver still answers exactly one
+ * question at a time.
+ */
+export const RATE_LINE_SCOPES = ["room", "person"] as const;
+export type RateLineScope = (typeof RATE_LINE_SCOPES)[number];
+
+/** A line's scope, with the backward-compatible default applied once, here. */
+export function rateLineScope(line: Pick<RateLine, "scope">): RateLineScope {
+  return line.scope ?? "room";
+}
 
 /**
  * One priced row. Mirrors how suppliers actually quote: a room type, on a meal
@@ -56,10 +114,33 @@ export type RateSeason = {
  */
 export type RateLine = {
   id: string;
+
+  /**
+   * What this row prices. Absent means `room` — every line written before this
+   * field existed is a room line, and saying so by default keeps them valid.
+   *
+   * It is not merely a label. A room line whose occupancy could not be read and
+   * a person line whose band is missing are otherwise the SAME key, and without
+   * a declared scope neither the collision nor the malformed line is detectable.
+   */
+  scope?: RateLineScope;
+
   roomType: string;
   mealPlan?: string;
-  /** People the price covers. */
-  occupancy?: number;
+  /**
+   * People the price covers — a property of the ROOM being priced, never of the
+   * party staying in it. See `SupplyRequirement.guestCount` for the party count.
+   */
+  ratedOccupancy?: number;
+  /**
+   * PERSON SCOPE ONLY. Which band on THIS sheet the person falls under.
+   *
+   * Required on a person line and forbidden on a room line — both are checked,
+   * because a stray band on a room line is a silent capture error and a missing
+   * band on a person line makes the row unidentifiable.
+   */
+  ageBandRef?: string;
+
   /** Which season window this row prices; absent = applies to the whole sheet. */
   seasonId?: string;
   /** COMMERCIALLY SENSITIVE — founder-only. Absent until captured. */
@@ -86,7 +167,9 @@ export const RATE_SHEET_STATUS_DESCRIPTIONS: Record<RateSheetStatus, string> = {
   draft: "Captured from the supplier, not yet approved for pricing use.",
   active: "Approved and in force — the Pricing Engine may quote from it.",
   expired: "Past its validity period. No longer quotable.",
-  superseded: "Replaced by a newer sheet from the same supplier.",
+  // Supplier AND property: with property-scoped sheets, a renewal for one
+  // property leaves every other property's sheet untouched.
+  superseded: "Replaced by a newer sheet from the same supplier and property.",
 };
 
 export type RateSheet = {
@@ -94,6 +177,34 @@ export type RateSheet = {
   vendorId: string;
   /** Captured for the register; the vendor record stays canonical. */
   vendorName: string;
+
+  /**
+   * The property this sheet prices, once a human has resolved it.
+   *
+   * ⚠️ OPAQUE ON PURPOSE. This is a bare `hotels.id`, not a `HotelRecord`, and
+   * it must stay that way: `lib/hotels` already imports `lib/rates`, so a typed
+   * hotel reference here would close the loop into `rates → hotels → rates`.
+   * The same reasoning is why `vendorId` is a string and this module does not
+   * import `lib/vendor` — M8 stays the canonical property authority and M4
+   * merely points at it.
+   *
+   * ABSENT means UNRESOLVED, never "applies to every property". A sheet whose
+   * supplier named a property that nobody has matched yet cannot be activated;
+   * see `activateRateSheet`.
+   */
+  propertyId?: string;
+
+  /**
+   * The supplier's own name or code for that property, exactly as received.
+   *
+   * Kept beside `propertyId` for the same reason `vendorName` sits beside
+   * `vendorId`: the resolved id answers "which property", and this answers
+   * "what did the supplier actually write". It is the evidence a later dispute
+   * is settled against, the string a human is shown during matching, and what
+   * next month's sheet is re-matched on when a supplier renames something.
+   * Never overwritten by a resolution.
+   */
+  vendorPropertyRef?: string;
   /** Vendor's own reference for the sheet, if they gave one. */
   reference?: string;
   status: RateSheetStatus;
@@ -103,6 +214,12 @@ export type RateSheet = {
   /** ISO 4217 code as quoted by the supplier — never defaulted. */
   currency?: string;
   seasons: RateSeason[];
+  /**
+   * Age bands this supplier declared on this sheet. Empty is normal and valid —
+   * a room-only sheet declares none, and that is a true statement about the
+   * supplier rather than missing data. Never populated by BPT.
+   */
+  ageBands: RateAgeBand[];
   lines: RateLine[];
   /** Refs into the Documents layer — the original PDF/spreadsheet. */
   documentRefs: string[];

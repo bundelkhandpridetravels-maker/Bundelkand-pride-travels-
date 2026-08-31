@@ -6,7 +6,7 @@
  * should cost; judging that is the operations team's job, and encoding a rule
  * here would be inventing commercial policy.
  */
-import type { RateSheet, RateSheetStatus } from "@/lib/rates/model";
+import { rateLineScope, type RateSheet, type RateSheetStatus } from "@/lib/rates/model";
 import { findSeasonOverlaps, findUncoveredDates, isValidWindow } from "@/lib/rates/seasons";
 
 /** How far ahead an expiring rate sheet is flagged. Mirrors M3's contract
@@ -109,14 +109,79 @@ export function validateRateSheet(sheet: RateSheet, now: Date = new Date()): Rat
     });
   }
 
-  // Duplicate rows: the same room/meal/occupancy/season priced twice is
-  // ambiguous — the engine would have two answers for one query.
+  // ── Scope integrity ────────────────────────────────────────────────
+  // A room line and a person line are different kinds of row and carry
+  // different identity. Each is checked for the field the other one owns,
+  // because a stray field is a capture error that would otherwise be silently
+  // ignored — and a missing one makes the row unidentifiable.
+  const strayBand = sheet.lines.filter(
+    (l) => rateLineScope(l) === "room" && l.ageBandRef !== undefined,
+  );
+  if (strayBand.length > 0) {
+    errors.push({
+      severity: "error",
+      code: "room_line_has_age_band",
+      message: `${strayBand.length} room rate line(s) carry an age band. A room rate prices the room, not a person — the band belongs on a person line.`,
+    });
+  }
+
+  const strayOccupancy = sheet.lines.filter(
+    (l) => rateLineScope(l) === "person" && l.ratedOccupancy !== undefined,
+  );
+  if (strayOccupancy.length > 0) {
+    errors.push({
+      severity: "error",
+      code: "person_line_has_occupancy",
+      message: `${strayOccupancy.length} person rate line(s) carry a rated occupancy. A person rate covers one person; an occupancy here would be invented.`,
+    });
+  }
+
+  const bandless = sheet.lines.filter(
+    (l) => rateLineScope(l) === "person" && !l.ageBandRef?.trim(),
+  );
+  if (bandless.length > 0) {
+    errors.push({
+      severity: "error",
+      code: "age_band_missing",
+      message: `${bandless.length} person rate line(s) name no age band. Without one the row cannot be told apart from any other person rate on the same room and season.`,
+    });
+  }
+
+  // Lines referencing a band the sheet never declared — the same refusal, for
+  // the same reason, as `season_unknown` below.
+  const bandIds = new Set(sheet.ageBands.map((b) => b.id));
+  const orphanBands = sheet.lines.filter((l) => l.ageBandRef && !bandIds.has(l.ageBandRef));
+  if (orphanBands.length > 0) {
+    errors.push({
+      severity: "error",
+      code: "age_band_unknown",
+      message: `${orphanBands.length} rate line(s) reference an age band not declared on this sheet.`,
+    });
+  }
+
+  for (const band of sheet.ageBands) {
+    const { minAgeInclusive: lo, maxAgeInclusive: hi } = band;
+    if (lo !== undefined && hi !== undefined && hi < lo) {
+      errors.push({
+        severity: "error",
+        code: "age_band_invalid",
+        message: `Age band "${band.label}" ends before it starts.`,
+      });
+    }
+  }
+
+  // Duplicate rows: the same row priced twice is ambiguous — the engine would
+  // have two answers for one query. The key is PER SCOPE, because a room line
+  // and a person line identify themselves by different dimensions: a room by
+  // its occupancy, a person by their age band.
   const seen = new Map<string, number>();
   for (const line of sheet.lines) {
+    const scope = rateLineScope(line);
     const key = [
+      scope,
       line.roomType?.trim().toLowerCase() ?? "",
       line.mealPlan?.trim().toLowerCase() ?? "",
-      line.occupancy ?? "",
+      scope === "room" ? (line.ratedOccupancy ?? "") : (line.ageBandRef ?? ""),
       line.seasonId ?? "",
     ].join("|");
     seen.set(key, (seen.get(key) ?? 0) + 1);
@@ -126,7 +191,7 @@ export function validateRateSheet(sheet: RateSheet, now: Date = new Date()): Rat
     errors.push({
       severity: "error",
       code: "duplicate_lines",
-      message: `${duplicates} duplicate rate line group(s) — same room, meal plan, occupancy and season priced more than once.`,
+      message: `${duplicates} duplicate rate line group(s) — same scope, room, meal plan, season and (rated occupancy or age band) priced more than once.`,
     });
   }
 
@@ -263,11 +328,40 @@ export type ActivationResult =
  */
 export function activateRateSheet(
   sheet: RateSheet,
-  options: { approvedBy?: string; now?: Date } = {},
+  options: {
+    approvedBy?: string;
+    now?: Date;
+    /**
+     * Force the property gate on for a sheet that names no property at all.
+     * Self-determining otherwise — see below.
+     */
+    requirePropertyScope?: boolean;
+  } = {},
 ): ActivationResult {
   if (sheet.status === "active") return { ok: false, error: "Sheet is already active." };
   if (sheet.status === "superseded") {
     return { ok: false, error: "A superseded sheet cannot be reactivated." };
+  }
+
+  // PROPERTY GATE. A sheet that carries the supplier's own property reference
+  // is, by that fact, about one specific property — and activating it before a
+  // human has said WHICH property would put a price against a hotel nobody
+  // confirmed. So the gate determines itself from the sheet: naming a property
+  // without resolving it blocks. A sheet with no property claim at all is a
+  // single-property supplier under the older assumption and is unaffected
+  // unless the caller, which can see whether the vendor sells more than one,
+  // asks for the gate explicitly.
+  //
+  // Matching is deliberately NOT attempted here: no name comparison, no alias,
+  // no created property. Resolution is a human calibration step and M8 owns
+  // creating a property.
+  if (!sheet.propertyId && (sheet.vendorPropertyRef || options.requirePropertyScope)) {
+    return {
+      ok: false,
+      error: sheet.vendorPropertyRef
+        ? `The supplier's property "${sheet.vendorPropertyRef}" has not been matched to a BPT property. Resolve it before activating.`
+        : "This sheet has no property scope. Resolve which property it prices before activating.",
+    };
   }
 
   const approver = options.approvedBy?.trim();

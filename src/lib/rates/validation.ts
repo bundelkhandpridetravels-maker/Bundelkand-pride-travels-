@@ -6,7 +6,12 @@
  * should cost; judging that is the operations team's job, and encoding a rule
  * here would be inventing commercial policy.
  */
-import { rateLineScope, type RateSheet, type RateSheetStatus } from "@/lib/rates/model";
+import {
+  rateLineOffering,
+  rateLineScope,
+  type RateSheet,
+  type RateSheetStatus,
+} from "@/lib/rates/model";
 import { findSeasonOverlaps, findUncoveredDates, isValidWindow } from "@/lib/rates/seasons";
 
 /** How far ahead an expiring rate sheet is flagged. Mirrors M3's contract
@@ -73,6 +78,20 @@ export function validateRateSheet(sheet: RateSheet, now: Date = new Date()): Rat
     });
   }
 
+  // ── Rate unit ──────────────────────────────────────────────────────
+  // The same class of gap as a missing currency, and checked in the same place:
+  // an amount whose unit nobody declared cannot be multiplied by nights. Absent
+  // is UNKNOWN and blocks — it is never read as "night".
+  if (!sheet.rateUnit) {
+    errors.push({
+      severity: "error",
+      code: "rate_unit_unknown",
+      message: sheet.vendorRateUnitRef
+        ? `The supplier's rate basis "${sheet.vendorRateUnitRef}" has not been resolved to a rate unit. Resolve it before pricing.`
+        : "No rate unit recorded — what one amount covers is unknown, so it cannot be priced.",
+    });
+  }
+
   // ── Lines ──────────────────────────────────────────────────────────
   if (sheet.lines.length === 0) {
     errors.push({
@@ -82,12 +101,36 @@ export function validateRateSheet(sheet: RateSheet, now: Date = new Date()): Rat
     });
   }
 
-  const missingAmount = sheet.lines.filter((l) => l.amount === undefined);
+  // ── Offering integrity ─────────────────────────────────────────────
+  // A missing amount is only a fault on a row that CLAIMS to be priced. A row
+  // where the supplier said "N/A", "on request" or "complimentary" has no amount
+  // because there is no amount to have, and treating that as an error made one
+  // honestly-recorded row invalidate every other room type on the sheet.
+  const missingAmount = sheet.lines.filter((l) => {
+    if (l.amount !== undefined) return false;
+    const offering = rateLineOffering(l);
+    // undefined here is UNKNOWN — nothing captured at all, which stays an error.
+    return offering === undefined || offering === "PRICED";
+  });
   if (missingAmount.length > 0) {
     errors.push({
       severity: "error",
       code: "amount_missing",
-      message: `${missingAmount.length} rate line(s) have no amount.`,
+      message: `${missingAmount.length} rate line(s) have no amount and no supplier statement explaining why.`,
+    });
+  }
+
+  // The mirror of the rule above: a row the supplier did NOT price must not
+  // carry a number. "On request" with an amount is two contradictory answers,
+  // and silently trusting either one would invent a commercial fact.
+  const unpricedWithAmount = sheet.lines.filter(
+    (l) => l.amount !== undefined && l.offering !== undefined && l.offering !== "PRICED",
+  );
+  if (unpricedWithAmount.length > 0) {
+    errors.push({
+      severity: "error",
+      code: "offering_amount_conflict",
+      message: `${unpricedWithAmount.length} rate line(s) carry an amount while declaring they are not priced.`,
     });
   }
 
@@ -361,6 +404,24 @@ export function activateRateSheet(
       error: sheet.vendorPropertyRef
         ? `The supplier's property "${sheet.vendorPropertyRef}" has not been matched to a BPT property. Resolve it before activating.`
         : "This sheet has no property scope. Resolve which property it prices before activating.",
+    };
+  }
+
+  // CONDITIONS GATE. Suppliers write real restrictions as prose — "rates not
+  // valid during festive holidays" — and nothing in this module reads prose. A
+  // sheet carrying such a statement can otherwise go active and price the
+  // excluded date at full confidence, which is a wrong number handed to a
+  // customer, not a missing feature.
+  //
+  // The gate asks only that a human has READ the text. It deliberately does not
+  // parse it, extract dates, or claim the conditions are satisfied — inventing a
+  // blackout calendar from free text is exactly the guessing this project
+  // forbids. Determined from the sheet, like the property gate above.
+  const conditioned = sheet.lines.filter((l) => l.conditions?.trim());
+  if (conditioned.length > 0 && !sheet.conditionsReviewed) {
+    return {
+      ok: false,
+      error: `${conditioned.length} rate line(s) carry supplier conditions that nobody has reviewed. Read them before activating — they may exclude dates this sheet would otherwise price.`,
     };
   }
 

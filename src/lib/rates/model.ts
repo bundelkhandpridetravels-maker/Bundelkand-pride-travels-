@@ -104,6 +104,51 @@ export function rateLineScope(line: Pick<RateLine, "scope">): RateLineScope {
 }
 
 /**
+ * What the SUPPLIER said about this row, when they said something other than a
+ * price.
+ *
+ * Real sheets answer a combination in more than one way: a number, "N/A", a
+ * dash, "ON REQUEST", or "complimentary". Those are four different commercial
+ * facts and only one of them is a price. Before this existed they all collapsed
+ * into "no amount", which is also what "nobody has captured this yet" looks
+ * like — so a supplier who answered clearly was indistinguishable from silence,
+ * and recording their answer honestly made the whole sheet unactivatable.
+ *
+ * ⚠️ NONE OF THESE IS A NUMBER. `ON_REQUEST` is not zero, `COMPLIMENTARY` is not
+ * zero, and `NOT_OFFERED` is not zero. A real captured 0 stays a real price of
+ * zero and is `PRICED`. Sentinel amounts are forbidden — see `money.ts`, where a
+ * money value carries no room for a special meaning.
+ */
+export const RATE_OFFERINGS = ["PRICED", "NOT_OFFERED", "ON_REQUEST", "COMPLIMENTARY"] as const;
+export type RateOffering = (typeof RATE_OFFERINGS)[number];
+
+export const RATE_OFFERING_DESCRIPTIONS: Record<RateOffering, string> = {
+  PRICED: "The supplier gave a price for this combination.",
+  NOT_OFFERED: "The supplier said they do not offer this combination.",
+  ON_REQUEST: "The supplier will quote on request — no standing price exists.",
+  COMPLIMENTARY: "The supplier provides this at no charge as a concession, not at a price of zero.",
+};
+
+/**
+ * A line's offering state, with the one backward-compatible inference applied
+ * once, here — the same shape as `rateLineScope`.
+ *
+ * Returns `undefined` for UNKNOWN. That is deliberate: absence of an answer is
+ * NOT a fifth state to be stored, it is the absence of capture, and giving it an
+ * enum member would let it be written down as though someone had established it.
+ *
+ * An amount with no declared offering reads as `PRICED` because a number IS the
+ * evidence of a price — that is reading what was captured, not inventing it.
+ * Nothing else is inferred: no amount and no declaration stays UNKNOWN.
+ */
+export function rateLineOffering(
+  line: Pick<RateLine, "offering" | "amount">,
+): RateOffering | undefined {
+  if (line.offering) return line.offering;
+  return line.amount !== undefined ? "PRICED" : undefined;
+}
+
+/**
  * One priced row. Mirrors how suppliers actually quote: a room type, on a meal
  * plan, at an occupancy, for a season.
  *
@@ -143,6 +188,16 @@ export type RateLine = {
 
   /** Which season window this row prices; absent = applies to the whole sheet. */
   seasonId?: string;
+
+  /**
+   * What the supplier said, when it was not a price. Absent means UNKNOWN, or
+   * `PRICED` when an amount is present — see `rateLineOffering`.
+   *
+   * This is a STATE, never an identity: two rows differing only by offering are
+   * still the same row priced twice, and `duplicate_lines` must still catch them.
+   */
+  offering?: RateOffering;
+
   /** COMMERCIALLY SENSITIVE — founder-only. Absent until captured. */
   amount?: number;
   /** Free-text conditions as written by the vendor (min nights, blackout…). */
@@ -152,6 +207,39 @@ export type RateLine = {
 /* ------------------------------------------------------------------ *
  * Rate sheets
  * ------------------------------------------------------------------ */
+
+/**
+ * What ONE unit of a rate amount buys, on the time axis.
+ *
+ * ⚠️ THIS IS NOT `RateLineScope` AND MUST NOT DUPLICATE IT. Scope says whether a
+ * row prices a ROOM or a PERSON; this says what one unit of it covers. The
+ * supplier's basis is COMPOSED from the two — `scope × rateUnit` — so BPT's
+ * normal convention, "per room per night", is `scope: "room"` with
+ * `rateUnit: "night"`, and a child rate is `scope: "person"` with the same unit.
+ * A single combined field would allow `scope: "room"` beside a basis saying
+ * "per person", two fields contradicting each other with no rule to settle it.
+ *
+ * WHY THE SHEET AND NOT THE LINE: suppliers state this once, in a header, for
+ * the whole sheet — exactly like `currency`, which this mirrors in every
+ * respect: one declaration per sheet, required before anything can be priced,
+ * and absent is a refusal (`rate_unit_unknown`), never a default. Copying the
+ * same declaration onto every row would let rows silently disagree.
+ *
+ * ⚠️ ONE MEMBER ON PURPOSE. `night` is the only unit the business has confirmed
+ * and the only one the pricing arithmetic can act on today. Values such as
+ * `stay`, `meal`, `seat` or `unit` are NOT listed: no supplier document on
+ * record declares them, nothing consumes them, and adding them now would invent
+ * supplier vocabulary. Extending this list later is purely additive.
+ *
+ * ABSENT MEANS UNKNOWN, never "night". An unread sheet and a per-night sheet
+ * must not look the same, because the difference is a wrong invoice.
+ */
+export const RATE_UNITS = ["night"] as const;
+export type RateUnit = (typeof RATE_UNITS)[number];
+
+export const RATE_UNIT_DESCRIPTIONS: Record<RateUnit, string> = {
+  night: "One amount covers one night of the scope priced (a room, or a person).",
+};
 
 export const RATE_SHEET_STATUSES = ["draft", "active", "expired", "superseded"] as const;
 export type RateSheetStatus = (typeof RATE_SHEET_STATUSES)[number];
@@ -213,6 +301,28 @@ export type RateSheet = {
   validTo?: string;
   /** ISO 4217 code as quoted by the supplier — never defaulted. */
   currency?: string;
+
+  /**
+   * What one unit of every amount on this sheet buys. ABSENT MEANS UNKNOWN.
+   *
+   * Mirrors `currency` exactly, and for the same reason: a number whose unit
+   * nobody declared cannot be multiplied. The pricing engine multiplies a unit
+   * cost by a quantity of nights without being able to check what the unit was,
+   * so an undeclared unit is a silent-miscalculation path, not a cosmetic gap.
+   */
+  rateUnit?: RateUnit;
+
+  /**
+   * The supplier's own wording for that basis, exactly as received — e.g. the
+   * text of their header row.
+   *
+   * Stands beside `rateUnit` for the same reason `vendorPropertyRef` stands
+   * beside `propertyId`: the resolved value is what the engine uses, and this is
+   * the evidence it was resolved from. Never overwritten by a resolution, and
+   * never parsed here — mapping wording to a unit is human calibration.
+   */
+  vendorRateUnitRef?: string;
+
   seasons: RateSeason[];
   /**
    * Age bands this supplier declared on this sheet. Empty is normal and valid —
@@ -221,6 +331,23 @@ export type RateSheet = {
    */
   ageBands: RateAgeBand[];
   lines: RateLine[];
+
+  /**
+   * A human has READ the supplier's free-text `conditions` on this sheet.
+   *
+   * It asserts nothing about what those conditions say. It does not mean the
+   * dates are clear, that no blackout applies, or that anything was parsed —
+   * only that a person has looked. That is the entire claim, and it must not be
+   * read as more.
+   *
+   * WHY IT EXISTS: `conditions` carries text like "not valid during festive
+   * holidays", and nothing reads it. Without this gate a sheet carrying a
+   * supplier's own exclusion activates and prices the excluded date at full
+   * confidence. Interpreting the text into dates is calibration work and does
+   * not belong in this module; refusing to activate an unread exclusion does.
+   */
+  conditionsReviewed?: boolean;
+
   /** Refs into the Documents layer — the original PDF/spreadsheet. */
   documentRefs: string[];
   /** The M3 contract this pricing sits under, when one exists. */

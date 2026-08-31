@@ -21,6 +21,7 @@
  * and correctly reports that no rate exists.
  */
 import {
+  rateLineOffering,
   rateLineScope,
   type RateLine,
   type RateLineScope,
@@ -90,6 +91,10 @@ export type RateFailureCode =
   | "property_required"
   | "ambiguous_sheet_match"
   | "age_band_required"
+  | "rate_unit_unknown"
+  | "not_offered"
+  | "on_request"
+  | "complimentary_unpriced"
   | "sheet_not_active"
   | "sheet_invalid"
   | "sheet_lapsed"
@@ -175,13 +180,15 @@ function matchingLines(sheet: RateSheet, query: RateQuery, season: RateSeason | 
  *   4. the TRAVEL date sits inside its validity window
  *   5. exactly one PROPERTY is in play — an omitted property may not pick one
  *   6. exactly one SHEET wins — same-day validity starts are a conflict, not a race
- *   7. it passes M4's own validation (delegated, never re-implemented)
- *   8. it has not lapsed as of `now`
- *   9. the travel date is not covered by overlapping seasons
- *  10. exactly one line matches the requested dimensions
- *  11. that line has an amount, and the sheet has a currency
+ *   7. the sheet declares what one amount COVERS — an undeclared unit refuses
+ *   8. it passes M4's own validation (delegated, never re-implemented)
+ *   9. it has not lapsed as of `now`
+ *  10. the travel date is not covered by overlapping seasons
+ *  11. exactly one line matches the requested dimensions
+ *  12. the supplier actually PRICED that line, rather than declining it
+ *  13. that line has an amount, and the sheet has a currency
  *
- * Gates 5 and 6 are the sheet-level counterpart of gate 10. Before property
+ * Gates 5 and 6 are the sheet-level counterpart of gate 11. Before property
  * scope existed, one vendor meant one sheet and sheet ambiguity could not
  * arise; with a consolidator selling fifty properties it can, so it refuses
  * here for the same reason an ambiguous line refuses there.
@@ -266,6 +273,18 @@ export function resolveRate(
   }
   const sheet = ranked[0];
 
+  // RATE UNIT, checked BEFORE the validation gate below. Validation also reports
+  // this, but gate 7 collapses every validation error into one `sheet_invalid`
+  // code — and "nobody declared what this number means" is the one cause a
+  // caller must be able to read precisely, because the fix is a human decision
+  // rather than a data repair.
+  if (!sheet.rateUnit) {
+    return refuse(
+      "rate_unit_unknown",
+      "The sheet does not say what one amount covers, so it cannot be priced. A rate with no declared unit cannot be multiplied by nights.",
+    );
+  }
+
   const validation = validateRateSheet(sheet, now);
   if (!validation.ok) {
     return refuse(
@@ -307,6 +326,27 @@ export function resolveRate(
   }
 
   const line = candidates[0];
+
+  // The supplier answered this combination, but not with a price. Each state
+  // refuses with its own reason: "they told us no" and "we never asked" are
+  // different answers to a customer, and only one of them is worth a phone call.
+  const offering = rateLineOffering(line);
+  if (offering === "NOT_OFFERED") {
+    return refuse("not_offered", "The supplier does not offer this combination.");
+  }
+  if (offering === "ON_REQUEST") {
+    return refuse(
+      "on_request",
+      "The supplier quotes this on request — there is no standing price to use.",
+    );
+  }
+  if (offering === "COMPLIMENTARY") {
+    return refuse(
+      "complimentary_unpriced",
+      "The supplier provides this at no charge. That is a concession, not a price of zero, so it carries no amount to quote.",
+    );
+  }
+
   const unitCost = fromRateLineAmount(line.amount, sheet.currency);
   if (!unitCost.ok) {
     return refuse(

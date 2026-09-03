@@ -361,6 +361,10 @@ export function resolveRate(
     vendorName: sheet.vendorName,
     rateSheetId: sheet.id,
     rateLineId: line.id,
+    // Both sides of the property question, so an audit can assert they agree
+    // rather than assume it. See `RateProvenance` for why one would not do.
+    ...(query.propertyId !== undefined ? { requestedPropertyId: query.propertyId } : {}),
+    ...(sheet.propertyId !== undefined ? { resolvedPropertyId: sheet.propertyId } : {}),
     ...(season ? { seasonId: season.id, seasonLabel: season.label } : {}),
     ...(sheet.validFrom ? { validFrom: sheet.validFrom } : {}),
     ...(sheet.validTo ? { validTo: sheet.validTo } : {}),

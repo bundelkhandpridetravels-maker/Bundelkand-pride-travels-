@@ -77,6 +77,13 @@ export const dashboardNav: DashboardNavItem[] = [
     status: "scaffold",
   },
   {
+    label: "Hotels",
+    href: "/dashboard/hotels",
+    icon: "grid",
+    description: "Hotel supply foundation — categories, capacity, allocation readiness.",
+    status: "scaffold",
+  },
+  {
     label: "Documents",
     href: "/dashboard/documents",
     icon: "shield",

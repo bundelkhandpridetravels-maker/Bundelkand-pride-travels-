@@ -42,6 +42,25 @@ export type RateProvenance = {
   vendorName?: string;
   rateSheetId: string;
   rateLineId: string;
+
+  /**
+   * The property the caller ASKED about, and the property the winning sheet is
+   * actually scoped to. Both are recorded, separately, on purpose.
+   *
+   * ⚠️ RECORDING ONLY ONE OF THESE WOULD BE WORSE THAN RECORDING NEITHER,
+   * because it would look like proof. A property mismatch is the one pricing
+   * error that produces a confident, well-formed, entirely wrong number — the
+   * right rate for the wrong hotel — and an audit that carries a single
+   * property id cannot tell that case from a correct one. Two fields let a
+   * later reader assert they are equal instead of trusting that they were.
+   *
+   * Both are optional because a caller may legitimately omit a property when
+   * the supplier has exactly one scope in play, and a legacy sheet may carry no
+   * resolved property at all. Absent means "not stated", never "matched".
+   */
+  requestedPropertyId?: string;
+  resolvedPropertyId?: string;
+
   seasonId?: string;
   seasonLabel?: string;
   /** The sheet's validity window, captured so an audit needs no second lookup. */
@@ -52,7 +71,8 @@ export type RateProvenance = {
     date: string;
     roomType: string;
     mealPlan?: string;
-    occupancy?: number;
+    /** The occupancy the rate covers — never a party count. */
+    ratedOccupancy?: number;
   };
 };
 

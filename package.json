@@ -28,6 +28,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@swc-node/register": "^1.12.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -37,5 +38,6 @@
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "type": "module"
 }
